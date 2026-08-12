@@ -1,0 +1,57 @@
+# bootstrap-packages.txt
+# ---------------------------------------------------------------------------
+# Minimal CodeIDE bootstrap package list (aarch64 only).
+#
+# This file is read by `scripts/build-bootstraps.sh` to determine which
+# packages are built from source and packed into `bootstrap-aarch64.zip`.
+#
+# The bootstrap must be as small as reasonably possible: only what is
+# required to:
+#   1. start `/data/data/jo.codeide/files/usr/bin/bash`
+#   2. provide the essential POSIX commands (cp, ls, mv, rm, cat, grep, ...)
+#   3. use `apt` (dpkg backend included transitively)
+#   4. install additional packages later via `apt install <pkg>`
+#   5. run correctly under `jo.codeide` package name
+#
+# Transitive dependencies are NOT listed here — they are discovered and
+# built automatically by `build-package.sh` via `scripts/buildorder.py`.
+# Notable transitive dependencies include: dpkg, gpgv, libc++, libiconv,
+# libgnutls, libgcrypt, liblzma, liblz4, zstd, xxhash, zlib, openssl,
+# libandroid-support, libandroid-glob, libandroid-selinux, libandroid-posix-semaphore,
+# pcre2, readline, ncurses, libacl, libcap-ng, libsmartcols, libgmp, libmpfr,
+# bzip2, xz-utils, curl, dialog, termux-am, termux-am-socket, termux-licenses,
+# gawk, less, procps, psmisc, util-linux.
+#
+# Packages explicitly excluded from the bootstrap (installable later via apt):
+#   vim, neovim, nano, openssh, python, nodejs, cmake, ninja, autoconf,
+#   automake, libtool, llvm, clang, git, make, gcc, gdb, unrar, ed, dos2unix,
+#   inetutils, lsof, net-tools, patch
+#
+# One package name per line. Comments start with `#`. Blank lines ignored.
+# ---------------------------------------------------------------------------
+
+# Package manager (essential)
+apt
+
+# Shell (essential)
+bash
+dash
+
+# POSIX core utilities (essential)
+coreutils
+diffutils
+findutils
+grep
+sed
+tar
+gzip
+unzip
+
+# Compression library required by tar / apt / unzip
+libbz2
+
+# CodeIDE/Termux runtime core (essential)
+termux-core
+termux-exec
+termux-keyring
+termux-tools

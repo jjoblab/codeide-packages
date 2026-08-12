@@ -1,0 +1,71 @@
+# packages.txt
+# ---------------------------------------------------------------------------
+# CodeIDE APT repository — installable packages (aarch64 only).
+#
+# This file is read by `.github/workflows/build-packages.yml` to determine
+# which `.deb` packages are built from source and published to the CodeIDE
+# APT repository on GitHub Pages.
+#
+# Bootstrap packages (bash, apt, coreutils, ...) are NOT listed here —
+# they are listed in `bootstrap-packages.txt` instead. Keeping the two
+# lists separate makes the bootstrap minimal and avoids confusing the
+# bootstrap builder with full-APT-repo packages.
+#
+# Packages listed here are installable from a running CodeIDE shell via:
+#     pkg install <name>
+#   or
+#     apt install <name>
+#
+# IMPORTANT: This repository focuses on the minimal terminal runtime.
+# Java, Gradle, Android SDK, AAPT2, D8, R8, NDK are NOT included — they
+# will be added in a later "CodeIDE Android Toolchain" phase.
+#
+# One package name per line. Comments start with `#`. Blank lines ignored.
+# ---------------------------------------------------------------------------
+
+# Editors (optional, installable on demand)
+vim
+neovim
+nano
+
+# Network & remote access
+openssh
+wget
+libcurl
+ca-certificates
+gnupg
+
+# Version control
+git
+
+# Compression / archive tools
+zip
+unrar
+zstd
+brotli
+xxhash
+
+# Build essentials (will pull in transitive deps automatically)
+make
+pkg-config
+cmake
+ninja
+autoconf
+automake
+libtool
+
+# Languages
+python
+python-pip
+nodejs
+
+# Networking utilities
+net-tools
+inetutils
+lsof
+
+# Misc utilities
+jq
+file
+which
+patch

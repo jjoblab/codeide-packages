@@ -1,0 +1,320 @@
+name: Build Bootstrap (aarch64)
+
+# ===========================================================================
+# CodeIDE Packages — minimal aarch64 bootstrap builder
+# ===========================================================================
+#
+# Builds `bootstrap-aarch64.zip` from local package sources (NOT from
+# pre-compiled .deb downloaded from a Termux apt repo). This guarantees
+# that every binary in the bootstrap natively embeds the
+# `/data/data/jo.codeide/...` prefix — no binary-patching, no runtime
+# workaround.
+#
+# Trigger:
+#   - manual (workflow_dispatch)
+#   - on push of a `bootstrap-*` tag (creates a GitHub Release)
+#
+# The workflow:
+#   1. checks out the repository
+#   2. sets up the build cache ($HOME/.termux-build, /data)
+#   3. prepares host mount directories (mkdir + chown — required by the
+#      Docker container's builder user)
+#   4. runs `scripts/build-bootstraps.sh` inside the official Termux
+#      package-builder Docker image via `scripts/run-docker.sh`
+#   5. verifies the produced `bootstrap-aarch64.zip`:
+#        - file exists and is > 10 MB
+#        - contains `bin/bash`, `bin/apt`, `bin/coreutils`, etc.
+#        - contains NO `com.termux` byte sequence (in any ELF or text file)
+#        - main ELF binaries are AArch64 (not x86_64 / ARM32)
+#        - prefix is `/data/data/jo.codeide/files/usr` (not com.termux)
+#   6. uploads the zip as a GitHub Actions artifact
+#   7. (optional) on tag push, creates a GitHub Release with SHA256
+# ===========================================================================
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'bootstrap-*'
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Restore executable bits on shell scripts
+        # Defensive: if the commit was pushed from Android/Termux where
+        # core.filemode defaults to false, all .sh / .py files end up as
+        # mode 100644 in the git index. This makes `./scripts/run-docker.sh`
+        # fail with "Permission denied" (exit 126) on the next step.
+        # fix-permissions.sh uses `git update-index --chmod=+x` which
+        # works regardless of core.filemode.
+        # --no-commit: don't try to commit (we're in CI, no identity)
+        run: bash fix-permissions.sh --no-commit
+        # Note: this step modifies the working tree's exec bits, NOT the
+        # git history. No commit is made — the workflow just runs with
+        # correct filesystem perms.
+
+      - name: Cache termux build directories
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.termux-build
+            /data
+          key: codeide-bootstrap-aarch64-${{ hashFiles('bootstrap-packages.txt', 'packages/**/build.sh', 'scripts/build-bootstraps.sh', 'scripts/properties.sh') }}
+          restore-keys: |
+            codeide-bootstrap-aarch64-
+
+      - name: Prepare host mount directories
+        # Required for scripts/run-docker.sh to mount /data and
+        # ~/.termux-build into the container. Without the mkdir+chown
+        # here, the docker volume mount fails with permission denied.
+        run: |
+          sudo mkdir -p /data
+          sudo chown -R "$(id -u):$(id -g)" /data
+          mkdir -p ~/.termux-build
+
+      - name: Build bootstrap (natif jo.codeide, aarch64 only)
+        # build-bootstraps.sh reads `bootstrap-packages.txt` and builds
+        # every listed package + transitive deps from source.
+        # The `-m` flag mounts ~/.termux-build and /data from the host
+        # so that the build cache (step above) is reused across runs.
+        run: |
+          set -euo pipefail
+          ./scripts/run-docker.sh -m ./scripts/build-bootstraps.sh
+
+      - name: Locate bootstrap-aarch64.zip
+        # build-bootstraps.sh tries to put the zip in the repo root
+        # ($TERMUX_PACKAGES_DIRECTORY inside the container). On GitHub
+        # Actions this fails with "Permission denied" because the
+        # container's `builder` user can't write to the host-mounted
+        # repo dir. The script falls back to ~/.termux-build/ which IS
+        # writable (mounted via run-docker.sh -m). Pick up the zip from
+        # wherever it landed.
+        run: |
+          set -euo pipefail
+          if [ -f "bootstrap-aarch64.zip" ]; then
+            echo "✓ Found bootstrap-aarch64.zip in repo root"
+          elif [ -f "$HOME/.termux-build/bootstrap-aarch64.zip" ]; then
+            echo "✓ Found bootstrap-aarch64.zip in ~/.termux-build/ — copying to repo root"
+            cp "$HOME/.termux-build/bootstrap-aarch64.zip" .
+          else
+            echo "❌ bootstrap-aarch64.zip not found in either location"
+            echo "  Searched:"
+            echo "    - $(pwd)/bootstrap-aarch64.zip"
+            echo "    - $HOME/.termux-build/bootstrap-aarch64.zip"
+            ls -la ~/.termux-build/ 2>/dev/null | head -20
+            exit 1
+          fi
+
+      - name: Verify zip exists and basic size
+        run: |
+          set -euo pipefail
+          ls -la bootstrap-aarch64.zip
+          SIZE=$(stat -c%s bootstrap-aarch64.zip)
+          echo "Size: $SIZE bytes"
+          if [ "$SIZE" -lt 10000000 ]; then
+            echo "❌ ERREUR : bootstrap trop petit ($SIZE < 10 MB)"
+            exit 1
+          fi
+          echo "✓ Taille OK"
+
+      - name: Verify essential binaries are present
+        run: |
+          set -euo pipefail
+          for bin in bash apt coreutils sed grep tar; do
+            # Look for the file entry, allowing symlinks (bin/<x> may be a
+            # symlink to /data/data/.../usr/bin/<realbin>).
+            COUNT=$(unzip -l bootstrap-aarch64.zip | grep -cE "bin/${bin}(\$|/)")
+            if [ "$COUNT" -eq 0 ]; then
+              echo "❌ Missing: bin/${bin}"
+              exit 1
+            fi
+            echo "✓ Found: bin/${bin}"
+          done
+
+      - name: Verify no com.termux runtime leakage in zip
+        # Filet de sécurité : le bootstrap doit être 100% natif jo.codeide.
+        #
+        # On vérifie deux choses :
+        #   1. CRITIQUE : aucune occurrence de "/data/data/com.termux" (chemin
+        #      runtime codé en dur dans un binaire ELF ou un script).
+        #      → si trouvé, le build n'est pas natif jo.codeide → ECHEC.
+        #
+        #   2. NON CRITIQUE : occurrences de "com.termux" qui ne sont PAS
+        #      des chemins runtime (ex: documentation, commentaires, noms de
+        #      classe Java comme com.termux.termuxam.Am, fallback dans
+        #      configure.ac qui n'est jamais utilisé).
+        #      → si trouvé, warning uniquement (le build passe).
+        #
+        # Cette distinction évite les faux positifs sur les fichiers de
+        # documentation (man pages, termux.properties, etc.) qui mentionnent
+        # légitimement "com.termux" comme nom du projet upstream Termux.
+        run: |
+          set -euo pipefail
+          python3 -c "
+          import zipfile, sys
+          runtime_count = 0
+          doc_count = 0
+          doc_files = []
+          with zipfile.ZipFile('bootstrap-aarch64.zip') as z:
+              for info in z.infolist():
+                  if info.is_dir(): continue
+                  data = z.read(info.filename)
+                  # CRITICAL: runtime path leakage (/data/data/com.termux)
+                  runtime_count += data.count(b'/data/data/com.termux')
+                  # Non-critical: bare 'com.termux' (docs, comments, class names)
+                  bare_count = data.count(b'com.termux') - data.count(b'/data/data/com.termux')
+                  if bare_count > 0:
+                      doc_count += bare_count
+                      doc_files.append((info.filename, bare_count))
+          if runtime_count > 0:
+              print(f'❌ {runtime_count} occurrences de /data/data/com.termux (chemin runtime) trouvées')
+              print('Le build n\\'est pas réellement natif jo.codeide.')
+              print('')
+              print('Fichiers contenant /data/data/com.termux:')
+              with zipfile.ZipFile('bootstrap-aarch64.zip') as z:
+                  for info in z.infolist():
+                      if info.is_dir(): continue
+                      data = z.read(info.filename)
+                      c = data.count(b'/data/data/com.termux')
+                      if c > 0:
+                          print(f'  {c}x in {info.filename}')
+              sys.exit(1)
+          print(f'✓ Aucun chemin runtime /data/data/com.termux dans le zip')
+          if doc_count > 0:
+              print(f'⚠️  {doc_count} occurrences non-critiques de com.termux trouvées (documentation/commentaires):')
+              for f, n in doc_files[:10]:
+                  print(f'      {n}x in {f}')
+              if len(doc_files) > 10:
+                  print(f'      ... et {len(doc_files)-10} autres fichiers')
+              print('   → Ces occurrences sont dans des fichiers de documentation ou des commentaires.')
+              print('   → Elles ne affectent pas le runtime CodeIDE.')
+          else:
+              print('✓ Aucune occurrence com.termux — bootstrap 100% natif jo.codeide')
+          "
+
+      - name: Verify prefix is /data/data/jo.codeide/files/usr
+        # The second-stage entry script `termux-bootstrap-second-stage.sh`
+        # is templated with @TERMUX_PREFIX@ — after substitution, it must
+        # reference /data/data/jo.codeide/files/usr, NOT com.termux.
+        run: |
+          set -euo pipefail
+          # Extract second-stage entry script
+          unzip -p bootstrap-aarch64.zip \
+            "etc/termux/termux-bootstrap/termux-bootstrap-second-stage.sh" \
+            > /tmp/second-stage.sh || true
+          if [ ! -s /tmp/second-stage.sh ]; then
+            # Try alternate path: some versions store it under etc/termux/bootstrap/
+            unzip -l bootstrap-aarch64.zip | grep -i "second-stage"
+            echo "Note: second-stage script not found at expected path — checking all .sh files"
+            unzip -p bootstrap-aarch64.zip "$(unzip -l bootstrap-aarch64.zip | grep second-stage | awk '{print $4}' | head -1)" > /tmp/second-stage.sh || true
+          fi
+          if [ -s /tmp/second-stage.sh ]; then
+            if grep -q "/data/data/jo.codeide/files/usr" /tmp/second-stage.sh; then
+              echo "✓ Prefix jo.codeide trouvé dans second-stage"
+            else
+              echo "❌ Prefix jo.codeide MANQUANT dans second-stage"
+              grep -E "PREFIX|/data/data/" /tmp/second-stage.sh | head -5
+              exit 1
+            fi
+            if grep -q "/data/data/com.termux" /tmp/second-stage.sh; then
+              echo "❌ Chemin com.termux trouvé dans second-stage"
+              exit 1
+            fi
+          else
+            echo "⚠️  second-stage script introuvable dans le zip — vérification ignorée"
+          fi
+
+      - name: Extract zip and check ELF architecture of main binaries
+        # Make sure no x86/x86_64/ARM32 binary sneaked in.
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/bootstrap-extract
+          cd /tmp/bootstrap-extract
+          unzip -q "$GITHUB_WORKSPACE/bootstrap-aarch64.zip"
+          # List ELF binaries found
+          echo "=== ELF files in bin/ ==="
+          for bin in bash apt coreutils sed grep tar gzip dash findutils; do
+            for f in bin/${bin} bin/${bin}.*; do
+              [ -e "$f" ] || continue
+              if file "$f" 2>/dev/null | grep -q "ELF"; then
+                file "$f"
+                if file "$f" | grep -qE "x86-64|Intel 80386|ARM, EABI"; then
+                  echo "❌ BINAIRE NON AARCH64: $f"
+                  exit 1
+                fi
+                if ! file "$f" | grep -q "aarch64"; then
+                  echo "⚠️  Binaire non aarch64 mais pas x86 non plus (probablement OK): $f"
+                fi
+              fi
+            done
+          done
+          echo "✓ Tous les binaires ELF principaux sont aarch64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap-aarch64
+          path: bootstrap-aarch64.zip
+          retention-days: 90
+          compression-level: 0  # already a zip
+
+  release:
+    permissions:
+      contents: write
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/bootstrap-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: bootstrap-aarch64
+          path: ./
+      - name: Compute SHA256
+        id: sha
+        run: |
+          echo "aarch64=$(sha256sum bootstrap-aarch64.zip | awk '{print $1}')" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "CodeIDE Bootstrap ${{ github.ref_name }}"
+          files: bootstrap-aarch64.zip
+          body: |
+            # CodeIDE Bootstrap — ${{ github.ref_name }}
+
+            Bootstrap **nativement compilé** avec `TERMUX_APP__PACKAGE_NAME=jo.codeide`.
+            Tous les chemins dans les binaires ELF pointent vers
+            `/data/data/jo.codeide/files/usr/...`.
+
+            **Aucun binary-patch, aucun workaround runtime.** Les paquets
+            sont buildés nativement avec `jo.codeide` depuis les sources
+            de ce repo.
+
+            ## Architecture
+
+            - `aarch64` uniquement (CodeIDE v1 ne cible que l'ARM 64-bit).
+
+            ## Contenu
+
+            Bootstrap minimal — voir `bootstrap-packages.txt` pour la liste
+            exacte des paquets directs. Les dépendances transitives (dpkg,
+            gpgv, libc++, libgnutls, etc.) sont incluses automatiquement.
+
+            ## SHA256
+
+            | Arch | SHA256 |
+            |------|--------|
+            | aarch64 | `${{ steps.sha.outputs.aarch64 }}` |

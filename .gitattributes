@@ -1,0 +1,38 @@
+# Default.
+*           text eol=lf
+
+# Treat patch files as binaries but let diff'ing them
+# as normal text.
+*.diff      binary diff
+*.patch     binary diff
+*.patch32   binary diff
+*.patch64   binary diff
+*.patch.*   binary diff
+
+# Powershell scripts.
+*.ps1       text eol=crlf
+
+# Binaries.
+*.gpg       binary
+*.gz        binary
+*.jpg       binary
+*.png       binary
+*.tar       binary
+*.tar.*     binary
+
+# File syntax
+*.patch.beforehostbuild linguist-language=RAML
+*.patch.beforehostbuild linguist-language=Diff
+
+# ===========================================================================
+# CodeIDE addition — preserve executable bit on shell scripts
+# ===========================================================================
+# When a .zip is extracted on Android, the Unix exec bit is lost. Even if
+# you `git init` + `git add`, the files are tracked as mode 0644 instead
+# of 0755. Adding the lines below doesn't *force* the exec bit via
+# gitattributes alone (gitattributes can only *remove* the exec bit
+# with `text eol=lf -diff`, not *add* it), but it documents the intent.
+#
+# To actually restore exec bits on Android, run `bash setup.sh` first,
+# then `git add -A` will track the correct 0755 mode.
+# ===========================================================================

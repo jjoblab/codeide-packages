@@ -1,0 +1,9 @@
+{
+  "pkg_format": "debian",
+  "packages": {
+    "name": "codeide-main",
+    "distribution": "stable",
+    "component": "main",
+    "url": "https://jjoblab.github.io/codeide-packages/apt/codeide-main"
+  }
+}
