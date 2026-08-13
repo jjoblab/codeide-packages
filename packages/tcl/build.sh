@@ -4,7 +4,13 @@ TERMUX_PKG_LICENSE="custom"
 TERMUX_PKG_LICENSE_FILE="license.terms"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="8.6.16"
-TERMUX_PKG_SRCURL=https://downloads.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz
+# downloads.sourceforge.net has been returning 403 for this file from CI
+# runners since at least Aug 13 2026 (see failed 'apt' bootstrap build).
+# master.dl.sourceforge.net serves the exact same file directly (no mirror
+# selection page, no repackaging) so the checksum below is unchanged; the
+# old URL is kept as a fallback in case this was a transient block.
+TERMUX_PKG_SRCURL=https://master.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz
+TERMUX_PKG_SRCURL_FALLBACKS=("https://downloads.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz")
 TERMUX_PKG_SHA256=91cb8fa61771c63c262efb553059b7c7ad6757afa5857af6265e4b0bdc2a14a5
 TERMUX_PKG_AUTO_UPDATE=false
 TERMUX_PKG_DEPENDS="zlib"
