@@ -19,10 +19,21 @@ TERMUX_PKG_VERSION=(6.6.20260307+really6.5.20250830
                     "$(. "$TERMUX_SCRIPTDIR/x11-packages/foot/build.sh"; echo "$TERMUX_PKG_VERSION")")
 # shellcheck disable=SC2031
 TERMUX_PKG_SRCURL=("https://github.com/ThomasDickey/ncurses-snapshots/archive/${_SNAPSHOT_COMMIT}.tar.gz"
-                   "https://dist.schmorp.de/rxvt-unicode/rxvt-unicode-${TERMUX_PKG_VERSION[1]}.tar.bz2"
+                   "https://dist.schmorp.de/rxvt-unicode/Attic/rxvt-unicode-${TERMUX_PKG_VERSION[1]}.tar.bz2"
                    "$(. "$TERMUX_SCRIPTDIR/x11-packages/kitty/build.sh"; echo "$TERMUX_PKG_SRCURL")"
                    "$(. "$TERMUX_SCRIPTDIR/x11-packages/alacritty/build.sh"; echo "$TERMUX_PKG_SRCURL")"
                    "$(. "$TERMUX_SCRIPTDIR/x11-packages/foot/build.sh"; echo "$TERMUX_PKG_SRCURL")")
+# Fallback URLs for sources whose upstream is intermittently unavailable.
+# dist.schmorp.de occasionally returns 404 for files that are normally present
+# in both `Attic/` and the top-level directory; provide the non-Attic URL as a
+# fallback so the build does not fail when only one of the two URLs is broken.
+# Parallel to TERMUX_PKG_SRCURL - empty string means "no fallback for this entry".
+# shellcheck disable=SC2031
+TERMUX_PKG_SRCURL_FALLBACKS=("" \
+                             "https://dist.schmorp.de/rxvt-unicode/rxvt-unicode-${TERMUX_PKG_VERSION[1]}.tar.bz2" \
+                             "" \
+                             "" \
+                             "")
 # shellcheck disable=SC2031
 TERMUX_PKG_SHA256=(28cd102efe6a2610e830cc79cf270da6ff0427b2022900a9a36d2761522f9576
                    aaa13fcbc149fe0f3f391f933279580f74a96fd312d6ed06b8ff03c2d46672e8
