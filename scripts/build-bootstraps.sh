@@ -537,6 +537,108 @@ main() {
                 extract_debs "$TERMUX_ARCH" || return $?
 
                 # ------------------------------------------------------------------
+                # Strip non-runtime files to keep the bootstrap minimal.
+                #
+                # When building from source, ALL dependencies (including BUILD
+                # dependencies like perl, docbook-xsl, python, swig, etc.)
+                # are compiled and their .deb files are extracted into the
+                # rootfs. This bloats the bootstrap from ~30 MB to 140 MB.
+                #
+                # We remove:
+                #   - include/         (C/C++ headers — not needed at runtime)
+                #   - share/man/       (man pages)
+                #   - share/doc/       (package documentation)
+                #   - share/info/      (info pages)
+                #   - lib/pkgconfig/   (pkg-config .pc files — dev only)
+                #   - lib/cmake/       (cmake modules — dev only)
+                #   - share/cmake/     (cmake modules — dev only)
+                #   - share/aclocal/   (autoconf macros — dev only)
+                #   - share/swig/      (SWIG typemaps — dev only)
+                #   - lib/perl5/       (Perl modules — perl is a build dep)
+                #   - share/xml/       (XML DTDs like docbook — dev only)
+                #   - share/bash-completion/ (optional)
+                #   - share/X11/       (X11 configs — not needed for shell)
+                #   - lib/python3.14/  (Python stdlib — python is a build dep)
+                #   - lib/tcl8.6/, lib/tk8.6/ (Tcl/Tk — build deps)
+                #
+                # We also remove entire packages that are build-only deps:
+                #   python, perl, tcl, tk, swig, doxygen, docbook-xml/xsl,
+                #   xorgproto, xcb-proto, fontconfig, freetype, ttf-dejavu,
+                #   libx11/libxcb/libxau/etc, gnupg, tor, unbound, etc.
+                # ------------------------------------------------------------------
+                echo "[*] Stripping non-runtime files from bootstrap rootfs..."
+                local _before_size
+                _before_size=$(du -sh "$BOOTSTRAP_ROOTFS" 2>/dev/null | awk '{print $1}' || echo "?")
+                echo "[*]   Rootfs size before strip: $_before_size"
+
+                # Disable set -e for the entire stripping block because:
+                #   - `while read ... done < file` returns non-zero at EOF
+                #   - `find ... -delete` returns non-zero if some files can't be deleted
+                #   - These are NOT real errors, just expected behavior
+                set +e
+
+                # Remove build-only packages' dpkg metadata and files
+                local _build_only_pkgs="python python-ensurepip-wheels python-tkinter python-xcbgen perl dpkg-perl tcl tk swig doxygen docbook-xml docbook-xsl xorgproto xcb-proto xorg-util-macros xtrans fontconfig fontconfig-utils freetype ttf-dejavu libx11 libxcb libxau libxdmcp libxext libxft libxrender libxss libxml2-python libxml2-utils libxslt xsltproc libsqlite-tcl icu-devtools tor unbound pyunbound libunbound gnupg scdaemon pinentry apt-ftparchive apt-transport-tor dpkg-scanpackages"
+                local _removed_pkgs=0
+
+                for pkg in $_build_only_pkgs; do
+                        local _list_file="$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/var/lib/dpkg/info/${pkg}.list"
+                        if [ -f "$_list_file" ]; then
+                                while IFS= read -r _line; do
+                                        [ -z "$_line" ] && continue
+                                        local _target="$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX${_line#$TERMUX_PREFIX}"
+                                        rm -f "$_target" 2>/dev/null
+                                done < "$_list_file"
+                                _removed_pkgs=$((_removed_pkgs+1))
+                        fi
+                done
+                echo "[*]   Processed $_removed_pkgs build-only packages"
+                unset pkg _line _target _list_file _removed_pkgs
+
+                # Remove entire directories that are dev-only or not needed at runtime
+                local _strip_dirs=(
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/include"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/man"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/doc"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/info"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/lib/pkgconfig"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/lib/cmake"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/cmake"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/aclocal"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/swig"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/lib/perl5"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/perl5"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/xml"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/bash-completion"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/share/X11"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/lib/python3.14"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/lib/tcl8.6"
+                        "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX/lib/tk8.6"
+                )
+                local _removed_dirs=0
+                for _dir in "${_strip_dirs[@]}"; do
+                        if [ -d "$_dir" ]; then
+                                rm -rf "$_dir"
+                                _removed_dirs=$((_removed_dirs+1))
+                        fi
+                done
+                echo "[*]   Removed $_removed_dirs dev-only directories"
+                unset _dir _strip_dirs _removed_dirs
+
+                # Remove stray .la libtool files (not needed at runtime)
+                find "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX" -name "*.la" -delete 2>/dev/null
+
+                # Remove empty directories left behind
+                find "$BOOTSTRAP_ROOTFS/$TERMUX_PREFIX" -type d -empty -delete 2>/dev/null
+
+                # Re-enable set -e for the rest of the build
+                set -e
+
+                local _after_size
+                _after_size=$(du -sh "$BOOTSTRAP_ROOTFS" 2>/dev/null | awk '{print $1}' || echo "?")
+                echo "[*]   Rootfs size after strip:  $_after_size"
+
+                # ------------------------------------------------------------------
                 # Global cleanup: replace any remaining /data/data/com.termux
                 # runtime paths in the extracted rootfs.
                 #
@@ -564,7 +666,7 @@ main() {
                         ! -name "*.gz" ! -name "*.zip" ! -name "*.xz" ! -name "*.bz2" \
                         ! -name "*.png" ! -name "*.jpg" ! -name "*.so" ! -name "*.a" \
                         ! -name "*.deb" ! -name "*.dex" ! -name "*.odex" \
-                        -print0 2>/dev/null)
+                        -print0 2>/dev/null) || true
                 echo "[*] Patched $_patched file(s) in bootstrap rootfs"
                 unset _f _patched
 

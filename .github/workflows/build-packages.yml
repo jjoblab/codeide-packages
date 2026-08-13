@@ -68,21 +68,27 @@ jobs:
             exit 1
           fi
 
+      - name: Prepare host mount directories
+        # MUST run BEFORE the cache step so that /data/data/.built-packages/
+        # exists when the cache tries to restore files into it.
+        # Also creates output/ dir for cached .deb files.
+        run: |
+          sudo mkdir -p /data/data/.built-packages
+          sudo chown -R "$(id -u):$(id -g)" /data
+          mkdir -p ~/.termux-build
+          mkdir -p output
+
       - name: Cache termux build directories
         uses: actions/cache@v4
         with:
           path: |
             ~/.termux-build
             /data
+            output
           key: codeide-apt-${{ matrix.target_arch }}-${{ hashFiles('packages.txt', 'packages/**/build.sh') }}
           restore-keys: |
             codeide-apt-${{ matrix.target_arch }}-
-
-      - name: Prepare host mount directories
-        run: |
-          sudo mkdir -p /data
-          sudo chown -R "$(id -u):$(id -g)" /data
-          mkdir -p ~/.termux-build
+          save-always: true
 
       - name: Build packages (natif jo.codeide, depuis les sources)
         # ★ Build NATIF — sans -I. On NE télécharge PAS de .deb précompilés

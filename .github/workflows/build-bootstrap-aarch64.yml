@@ -64,24 +64,27 @@ jobs:
         # git history. No commit is made — the workflow just runs with
         # correct filesystem perms.
 
+      - name: Prepare host mount directories
+        # MUST run BEFORE the cache step so that /data/data/.built-packages/
+        # exists when the cache tries to restore files into it.
+        # Also creates output/ dir for cached .deb files.
+        run: |
+          sudo mkdir -p /data/data/.built-packages
+          sudo chown -R "$(id -u):$(id -g)" /data
+          mkdir -p ~/.termux-build
+          mkdir -p output
+
       - name: Cache termux build directories
         uses: actions/cache@v4
         with:
           path: |
             ~/.termux-build
             /data
+            output
           key: codeide-bootstrap-aarch64-${{ hashFiles('bootstrap-packages.txt', 'packages/**/build.sh', 'scripts/build-bootstraps.sh', 'scripts/properties.sh') }}
           restore-keys: |
             codeide-bootstrap-aarch64-
-
-      - name: Prepare host mount directories
-        # Required for scripts/run-docker.sh to mount /data and
-        # ~/.termux-build into the container. Without the mkdir+chown
-        # here, the docker volume mount fails with permission denied.
-        run: |
-          sudo mkdir -p /data
-          sudo chown -R "$(id -u):$(id -g)" /data
-          mkdir -p ~/.termux-build
+          save-always: true
 
       - name: Build bootstrap (natif jo.codeide, aarch64 only)
         # build-bootstraps.sh reads `bootstrap-packages.txt` and builds

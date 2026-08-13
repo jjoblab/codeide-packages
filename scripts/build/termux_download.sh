@@ -45,6 +45,7 @@ termux_download() {
 		--speed-limit 1000   # Expect at least 1000 Bytes per second
 		--speed-time 60      # Fail if the minimum speed isn't met for at least 60 seconds
 		--location           # Follow redirects
+                --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 	)
 	TMPFILE=$(mktemp "$TERMUX_PKG_TMPDIR/download.${TERMUX_PKG_NAME-unnamed}.XXXXXXXXX")
 	if [[ "${TERMUX_QUIET_BUILD-}" == "true" ]]; then
