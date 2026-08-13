@@ -19,18 +19,21 @@ TERMUX_PKG_VERSION=(6.6.20260307+really6.5.20250830
                     "$(. "$TERMUX_SCRIPTDIR/x11-packages/foot/build.sh"; echo "$TERMUX_PKG_VERSION")")
 # shellcheck disable=SC2031
 TERMUX_PKG_SRCURL=("https://github.com/ThomasDickey/ncurses-snapshots/archive/${_SNAPSHOT_COMMIT}.tar.gz"
-                   "https://dist.schmorp.de/rxvt-unicode/Attic/rxvt-unicode-${TERMUX_PKG_VERSION[1]}.tar.bz2"
+                   "https://archive.ubuntu.com/ubuntu/pool/universe/r/rxvt-unicode/rxvt-unicode_${TERMUX_PKG_VERSION[1]}.orig.tar.bz2"
                    "$(. "$TERMUX_SCRIPTDIR/x11-packages/kitty/build.sh"; echo "$TERMUX_PKG_SRCURL")"
                    "$(. "$TERMUX_SCRIPTDIR/x11-packages/alacritty/build.sh"; echo "$TERMUX_PKG_SRCURL")"
                    "$(. "$TERMUX_SCRIPTDIR/x11-packages/foot/build.sh"; echo "$TERMUX_PKG_SRCURL")")
 # Fallback URLs for sources whose upstream is intermittently unavailable.
-# dist.schmorp.de occasionally returns 404 for files that are normally present
-# in both `Attic/` and the top-level directory; provide the non-Attic URL as a
-# fallback so the build does not fail when only one of the two URLs is broken.
+# dist.schmorp.de (the historical upstream) has been returning 404 for both
+# `Attic/` and the top-level rxvt-unicode-9.31.tar.bz2 since at least August
+# 2026 - see CI run that broke the 'apt' bootstrap build. archive.ubuntu.com
+# hosts the byte-identical orig tarball (same sha256) and is used as the
+# primary source now, with the original schmorp.de Attic URL kept as a
+# fallback in case it comes back online.
 # Parallel to TERMUX_PKG_SRCURL - empty string means "no fallback for this entry".
 # shellcheck disable=SC2031
 TERMUX_PKG_SRCURL_FALLBACKS=("" \
-                             "https://dist.schmorp.de/rxvt-unicode/rxvt-unicode-${TERMUX_PKG_VERSION[1]}.tar.bz2" \
+                             "https://dist.schmorp.de/rxvt-unicode/Attic/rxvt-unicode-${TERMUX_PKG_VERSION[1]}.tar.bz2" \
                              "" \
                              "" \
                              "")
