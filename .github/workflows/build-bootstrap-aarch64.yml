@@ -117,32 +117,35 @@ jobs:
           done
           echo "✓ Cleanup done. Kept the 1 most recent cache."
 
-      - name: Cache termux build directories
-        # NOTE: `save-always: true` was removed — it's deprecated
-        # (see warning in build log) and causes caches to be saved even
-        # on failed runs, which is exactly how broken/partial state
-        # ends up cached and causes mysterious future failures.
-        # We only want to cache a SUCCESSFUL build.
-        uses: actions/cache@v4
+      - name: Restore cache (termux build directories)
+        # INCREMENTAL BUILD SUPPORT
+        # =========================
+        # The termux build system tracks built packages in
+        # /data/data/.built-packages/<pkg_name>. If a package is already
+        # marked as built (with the correct version), it is SKIPPED
+        # automatically by build-package.sh.
+        #
+        # This means if a build fails at package 50/106, the 49 already-
+        # built packages are in /data/data/.built-packages/ — we just
+        # need to SAVE that state so the next run can restore it.
+        #
+        # We use separate restore/save steps (instead of the combined
+        # actions/cache@v4) because:
+        #   1. The combined action only saves on SUCCESS — a failed build
+        #      loses ALL progress (49 packages gone).
+        #   2. `save-always: true` is deprecated and doesn't work as intended.
+        #   3. The separate save step (below, with if: always()) saves
+        #      progress even on failure, so the next run RESUMES from
+        #      where this run stopped.
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.termux-build
             /data
             output
-          # Hash ONLY the files that actually affect the bootstrap build.
-          # Previously this included `packages/**/build.sh` which matches
-          # ALL ~2000+ packages in the repo — so editing ANY build.sh (even
-          # for a package not in the bootstrap) invalidated the cache key,
-          # causing the cache restore to miss and the build to start from
-          # scratch. Now we hash only:
-          #   - bootstrap-packages.txt (the bootstrap package list)
-          #   - scripts/build-bootstraps.sh (the bootstrap builder)
-          #   - scripts/properties.sh (paths and toolchain config)
-          #   - scripts/build/termux_download.sh (download logic — affects
-          #     every source fetch)
-          #   - scripts/build/*.sh (all build steps — affects every package)
-          # Plus a manual list of build.sh files for packages that are
-          # actually IN the bootstrap (apt, bash, coreutils, ...).
+          # Try exact key match first (same build scripts = same key).
+          # If no exact match, fall back to prefix match (most recent cache
+          # from a previous run, possibly with partial build progress).
           key: codeide-bootstrap-aarch64-${{ hashFiles('bootstrap-packages.txt', 'scripts/build-bootstraps.sh', 'scripts/properties.sh', 'scripts/build/termux_download.sh', 'scripts/build/*.sh', 'packages/apt/build.sh', 'packages/bash/build.sh', 'packages/coreutils/build.sh', 'packages/dash/build.sh', 'packages/diffutils/build.sh', 'packages/findutils/build.sh', 'packages/grep/build.sh', 'packages/sed/build.sh', 'packages/tar/build.sh', 'packages/gzip/build.sh', 'packages/unzip/build.sh', 'packages/libbz2/build.sh', 'packages/termux-core/build.sh', 'packages/termux-exec/build.sh', 'packages/termux-keyring/build.sh', 'packages/termux-tools/build.sh') }}
           restore-keys: |
             codeide-bootstrap-aarch64-
@@ -165,9 +168,60 @@ jobs:
         # every listed package + transitive deps from source.
         # The `-m` flag mounts ~/.termux-build and /data from the host
         # so that the build cache (step above) is reused across runs.
+        #
+        # INCREMENTAL BUILD: If this step FAILS, the cache save step
+        # below (if: always()) still runs, preserving the packages that
+        # were successfully built before the failure. The next workflow
+        # run will restore this partial state and RESUME from where this
+        # run stopped — no need to rebuild from scratch.
         run: |
           set -euo pipefail
           ./scripts/run-docker.sh -m ./scripts/build-bootstraps.sh
+
+      - name: Show build progress (packages built so far)
+        # This step ALWAYS runs (even on failure) to show how many
+        # packages were built in this run. Helps track incremental
+        # progress across multiple runs.
+        if: always()
+        run: |
+          echo "=== Build progress ==="
+          BUILT_DIR="/data/data/.built-packages"
+          if [ -d "$BUILT_DIR" ]; then
+            COUNT=$(find "$BUILT_DIR" -maxdepth 1 -type f | wc -l)
+            echo "✓ $COUNT packages built so far (tracked in $BUILT_DIR/)"
+            echo ""
+            echo "Built packages:"
+            ls -1 "$BUILT_DIR/" 2>/dev/null | sort | head -50
+            if [ "$COUNT" -gt 50 ]; then
+              echo "... and $((COUNT - 50)) more"
+            fi
+          else
+            echo "⚠️  No built packages directory found"
+          fi
+          echo ""
+          echo "=== Disk usage ==="
+          du -sh ~/.termux-build/ 2>/dev/null || true
+          du -sh /data/ 2>/dev/null || true
+
+      - name: Save cache (ALWAYS — preserves progress on failure)
+        # CRITICAL: This step uses `if: always()` to save the build state
+        # even when the build step fails. This enables incremental builds:
+        #   Run 1: builds packages 1-50, fails on 51 → cache saved with 50 pkgs
+        #   Run 2: restores 50 pkgs, builds 51-80, fails on 81 → cache saved with 80 pkgs
+        #   Run 3: restores 80 pkgs, builds 81-106 → SUCCESS!
+        #
+        # The save key includes github.run_id so it's unique per run —
+        # actions/cache/save would fail if the key already exists. The
+        # cleanup step at the start of the next run deletes old caches
+        # with the same prefix, keeping only the most recent.
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.termux-build
+            /data
+            output
+          key: codeide-bootstrap-aarch64-${{ hashFiles('bootstrap-packages.txt', 'scripts/build-bootstraps.sh', 'scripts/properties.sh', 'scripts/build/termux_download.sh', 'scripts/build/*.sh', 'packages/apt/build.sh', 'packages/bash/build.sh', 'packages/coreutils/build.sh', 'packages/dash/build.sh', 'packages/diffutils/build.sh', 'packages/findutils/build.sh', 'packages/grep/build.sh', 'packages/sed/build.sh', 'packages/tar/build.sh', 'packages/gzip/build.sh', 'packages/unzip/build.sh', 'packages/libbz2/build.sh', 'packages/termux-core/build.sh', 'packages/termux-exec/build.sh', 'packages/termux-keyring/build.sh', 'packages/termux-tools/build.sh') }}-run${{ github.run_id }}
 
       - name: Locate bootstrap-aarch64.zip
         # build-bootstraps.sh tries to put the zip in the repo root

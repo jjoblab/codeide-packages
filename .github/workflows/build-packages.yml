@@ -106,26 +106,16 @@ jobs:
           done
           echo "✓ Cleanup done. Kept the 1 most recent cache."
 
-      - name: Cache termux build directories
-        # `save-always: true` removed (deprecated, saves broken state on failure).
-        uses: actions/cache@v4
+      - name: Restore cache (termux build directories)
+        # INCREMENTAL BUILD SUPPORT — see build-bootstrap-aarch64.yml for
+        # full rationale. Same approach: restore-only here, save-only
+        # after the build with if: always() to preserve progress on failure.
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.termux-build
             /data
             output
-          # Hash ONLY files that affect the apt repo build. Previously
-          # `packages/**/build.sh` matched ALL ~2000+ packages, so editing
-          # any build.sh (even for a package not in packages.txt) invalidated
-          # the cache. Now we hash:
-          #   - packages.txt (the apt package list)
-          #   - scripts/build/termux_download.sh (download logic)
-          #   - scripts/build/*.sh (all build steps)
-          # This is still conservative — if a build.sh for a package in
-          # packages.txt changes, the cache should ideally be invalidated.
-          # But the restore-keys prefix match will still find the previous
-          # cache as a fallback, so we get partial restore. Trade-off:
-          # slightly stale cache occasionally, vs. constant cache misses.
           key: codeide-apt-${{ matrix.target_arch }}-${{ hashFiles('packages.txt', 'scripts/build/termux_download.sh', 'scripts/build/*.sh', 'scripts/build-package.sh') }}
           restore-keys: |
             codeide-apt-${{ matrix.target_arch }}-
@@ -143,10 +133,48 @@ jobs:
         # C'est plus long mais garantit un dépôt APT 100% jo.codeide.
         # -m monte ~/.termux-build et /data depuis l'hôte (cf. étape de cache
         # ci-dessus) pour réutiliser les paquets déjà construits.
+        #
+        # INCREMENTAL BUILD: If this step FAILS, the cache save step
+        # below (if: always()) still runs, preserving the packages that
+        # were successfully built before the failure. The next workflow
+        # run will restore this partial state and RESUME from where this
+        # run stopped — no need to rebuild from scratch.
         run: |
           set -euo pipefail
           mkdir -p ./debs
           ./scripts/run-docker.sh -m ./build-package.sh -a ${{ matrix.target_arch }} ${{ steps.pkglist.outputs.packages }}
+
+      - name: Show build progress (packages built so far)
+        # This step ALWAYS runs (even on failure) to show how many
+        # packages were built in this run. Helps track incremental
+        # progress across multiple runs.
+        if: always()
+        run: |
+          echo "=== Build progress ==="
+          BUILT_DIR="/data/data/.built-packages"
+          if [ -d "$BUILT_DIR" ]; then
+            COUNT=$(find "$BUILT_DIR" -maxdepth 1 -type f | wc -l)
+            echo "✓ $COUNT packages built so far (tracked in $BUILT_DIR/)"
+          else
+            echo "⚠️  No built packages directory found"
+          fi
+          echo ""
+          echo "=== Disk usage ==="
+          du -sh ~/.termux-build/ 2>/dev/null || true
+          du -sh /data/ 2>/dev/null || true
+
+      - name: Save cache (ALWAYS — preserves progress on failure)
+        # CRITICAL: This step uses `if: always()` to save the build state
+        # even when the build step fails. This enables incremental builds.
+        # See build-bootstrap-aarch64.yml for full rationale.
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.termux-build
+            /data
+            output
+          key: codeide-apt-${{ matrix.target_arch }}-${{ hashFiles('packages.txt', 'scripts/build/termux_download.sh', 'scripts/build/*.sh', 'scripts/build-package.sh') }}-run${{ github.run_id }}
 
       - name: Collect built .deb
         run: |
