@@ -147,6 +147,19 @@ jobs:
           restore-keys: |
             codeide-bootstrap-aarch64-
 
+      - name: Pre-download SourceForge-dependent sources
+        # SourceForge returns HTTP 403 to GitHub Actions runner IPs.
+        # This step pre-downloads ALL SourceForge-hosted tarballs in the
+        # bootstrap dependency chain from reliable alternative mirrors
+        # (GitHub releases, MacPorts, Ubuntu archive, Fossies) and places
+        # them in the termux build cache. When the build runs, it finds
+        # the files already on disk (SHA256 verified) and skips downloading.
+        #
+        # This runs AFTER the cache restore step (so cached files from a
+        # previous successful run are reused) and BEFORE the build step.
+        # If a file is already cached with the correct SHA256, it's skipped.
+        run: bash scripts/pre-download-sources.sh
+
       - name: Build bootstrap (natif jo.codeide, aarch64 only)
         # build-bootstraps.sh reads `bootstrap-packages.txt` and builds
         # every listed package + transitive deps from source.

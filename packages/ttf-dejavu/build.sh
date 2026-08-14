@@ -4,7 +4,16 @@ TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=2.37
 TERMUX_PKG_REVISION=8
-TERMUX_PKG_SRCURL=https://downloads.sourceforge.net/project/dejavu/dejavu/${TERMUX_PKG_VERSION}/dejavu-fonts-ttf-${TERMUX_PKG_VERSION}.tar.bz2
+# As of Aug 14 2026, GitHub Actions runners get HTTP 403 from
+# downloads.sourceforge.net (same issue as libpng, freetype, tcl, tk, swig).
+# GitHub releases are served from GitHub's own CDN and never 403 GH Actions
+# runners. The dejavu-fonts GitHub release has the exact same tarball
+# (SHA256 verified: fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7).
+# SourceForge URL kept as fallback.
+TERMUX_PKG_SRCURL=https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_${TERMUX_PKG_VERSION}/dejavu-fonts-ttf-${TERMUX_PKG_VERSION}.tar.bz2
+TERMUX_PKG_SRCURL_FALLBACKS=(
+        "https://downloads.sourceforge.net/project/dejavu/dejavu/${TERMUX_PKG_VERSION}/dejavu-fonts-ttf-${TERMUX_PKG_VERSION}.tar.bz2"
+)
 TERMUX_PKG_SHA256=fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7
 TERMUX_PKG_PLATFORM_INDEPENDENT=true
 TERMUX_PKG_BUILD_IN_SRC=true
@@ -19,11 +28,11 @@ etc/fonts/conf.d/57-dejavu-serif.conf
 "
 
 termux_step_make_install() {
-	## Install fonts.
-	mkdir -p "${TERMUX_PREFIX}/share/fonts/TTF"
-	cp -f ttf/*.ttf "${TERMUX_PREFIX}/share/fonts/TTF/"
+        ## Install fonts.
+        mkdir -p "${TERMUX_PREFIX}/share/fonts/TTF"
+        cp -f ttf/*.ttf "${TERMUX_PREFIX}/share/fonts/TTF/"
 
-	## Install config files used by 'fontconfig' package.
-	mkdir -p "${TERMUX_PREFIX}/etc/fonts/conf.d"
-	cp -f fontconfig/*.conf "${TERMUX_PREFIX}/etc/fonts/conf.d/"
+        ## Install config files used by 'fontconfig' package.
+        mkdir -p "${TERMUX_PREFIX}/etc/fonts/conf.d"
+        cp -f fontconfig/*.conf "${TERMUX_PREFIX}/etc/fonts/conf.d/"
 }

@@ -5,7 +5,16 @@ TERMUX_PKG_LICENSE_FILE="license.terms"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="8.6.14"
 TERMUX_PKG_REVISION=1
-TERMUX_PKG_SRCURL=https://downloads.sourceforge.net/sourceforge/tcl/tk${TERMUX_PKG_VERSION}-src.tar.gz
+# As of Aug 14 2026, GitHub Actions runners get HTTP 403 from
+# downloads.sourceforge.net. Ubuntu's archive mirror hosts the exact same
+# tk8.6.14 source tarball (SHA256 verified:
+# 8ffdb720f47a6ca6107eac2dd877e30b0ef7fac14f3a84ebbd0b3612cee41a94).
+# SourceForge URL kept as fallback.
+TERMUX_PKG_SRCURL=https://archive.ubuntu.com/ubuntu/pool/main/t/tk8.6/tk8.6_${TERMUX_PKG_VERSION}.orig.tar.gz
+TERMUX_PKG_SRCURL_FALLBACKS=(
+        "https://downloads.sourceforge.net/sourceforge/tcl/tk${TERMUX_PKG_VERSION}-src.tar.gz"
+        "https://downloads.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tk${TERMUX_PKG_VERSION}-src.tar.gz"
+)
 TERMUX_PKG_SHA256=8ffdb720f47a6ca6107eac2dd877e30b0ef7fac14f3a84ebbd0b3612cee41a94
 TERMUX_PKG_AUTO_UPDATE=false
 TERMUX_PKG_DEPENDS="fontconfig, libx11, libxft, libxss, tcl"
@@ -19,19 +28,19 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_pre_configure() {
-	TERMUX_PKG_SRCDIR+="/unix"
+        TERMUX_PKG_SRCDIR+="/unix"
 }
 
 termux_step_post_make_install() {
-	ln -sfr "$TERMUX_PREFIX/bin/wish${TERMUX_PKG_VERSION:0:3}" \
-		"$TERMUX_PREFIX"/bin/wish
-	ln -sfr "$TERMUX_PREFIX/lib/libtk${TERMUX_PKG_VERSION:0:3}.so" \
-		"$TERMUX_PREFIX"/lib/libtk.so
+        ln -sfr "$TERMUX_PREFIX/bin/wish${TERMUX_PKG_VERSION:0:3}" \
+                "$TERMUX_PREFIX"/bin/wish
+        ln -sfr "$TERMUX_PREFIX/lib/libtk${TERMUX_PKG_VERSION:0:3}.so" \
+                "$TERMUX_PREFIX"/lib/libtk.so
 
-	cd "$TERMUX_PKG_SRCDIR"/../
+        cd "$TERMUX_PKG_SRCDIR"/../
 
-	for dir in compat generic generic/ttk unix; do
-		install -dm755 "$TERMUX_PREFIX/include/tk-private/$dir"
-		install -m644 -t "$TERMUX_PREFIX/include/tk-private/$dir" "$dir"/*.h
-	done
+        for dir in compat generic generic/ttk unix; do
+                install -dm755 "$TERMUX_PREFIX/include/tk-private/$dir"
+                install -m644 -t "$TERMUX_PREFIX/include/tk-private/$dir" "$dir"/*.h
+        done
 }

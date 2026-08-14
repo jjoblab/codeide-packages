@@ -130,6 +130,12 @@ jobs:
           restore-keys: |
             codeide-apt-${{ matrix.target_arch }}-
 
+      - name: Pre-download SourceForge-dependent sources
+        # See build-bootstrap-aarch64.yml for full rationale.
+        # Pre-downloads SourceForge-hosted tarballs from reliable mirrors
+        # so the build finds them on disk and never hits SourceForge 403.
+        run: bash scripts/pre-download-sources.sh
+
       - name: Build packages (natif jo.codeide, depuis les sources)
         # ★ Build NATIF — sans -I. On NE télécharge PAS de .deb précompilés
         # depuis termux.dev (qui contiendraient /data/data/com.termux/...).
