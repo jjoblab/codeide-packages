@@ -45,6 +45,13 @@ jobs:
   build:
     permissions:
       contents: read
+      actions: write   # Required for `gh cache delete` in the cleanup step below.
+                        # Without this, the cleanup step fails with HTTP 403
+                        # "Resource not accessible by integration", old caches
+                        # accumulate, the 10 GB quota is exceeded, and GitHub
+                        # evicts the very caches we need (causing the build to
+                        # re-download every source from scratch and hit
+                        # SourceForge 403s).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -122,7 +129,21 @@ jobs:
             ~/.termux-build
             /data
             output
-          key: codeide-bootstrap-aarch64-${{ hashFiles('bootstrap-packages.txt', 'packages/**/build.sh', 'scripts/build-bootstraps.sh', 'scripts/properties.sh') }}
+          # Hash ONLY the files that actually affect the bootstrap build.
+          # Previously this included `packages/**/build.sh` which matches
+          # ALL ~2000+ packages in the repo — so editing ANY build.sh (even
+          # for a package not in the bootstrap) invalidated the cache key,
+          # causing the cache restore to miss and the build to start from
+          # scratch. Now we hash only:
+          #   - bootstrap-packages.txt (the bootstrap package list)
+          #   - scripts/build-bootstraps.sh (the bootstrap builder)
+          #   - scripts/properties.sh (paths and toolchain config)
+          #   - scripts/build/termux_download.sh (download logic — affects
+          #     every source fetch)
+          #   - scripts/build/*.sh (all build steps — affects every package)
+          # Plus a manual list of build.sh files for packages that are
+          # actually IN the bootstrap (apt, bash, coreutils, ...).
+          key: codeide-bootstrap-aarch64-${{ hashFiles('bootstrap-packages.txt', 'scripts/build-bootstraps.sh', 'scripts/properties.sh', 'scripts/build/termux_download.sh', 'scripts/build/*.sh', 'packages/apt/build.sh', 'packages/bash/build.sh', 'packages/coreutils/build.sh', 'packages/dash/build.sh', 'packages/diffutils/build.sh', 'packages/findutils/build.sh', 'packages/grep/build.sh', 'packages/sed/build.sh', 'packages/tar/build.sh', 'packages/gzip/build.sh', 'packages/unzip/build.sh', 'packages/libbz2/build.sh', 'packages/termux-core/build.sh', 'packages/termux-exec/build.sh', 'packages/termux-keyring/build.sh', 'packages/termux-tools/build.sh') }}
           restore-keys: |
             codeide-bootstrap-aarch64-
 

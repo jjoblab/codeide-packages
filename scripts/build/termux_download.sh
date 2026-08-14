@@ -21,6 +21,73 @@ termux_download() {
 	shift 3 2>/dev/null || shift $#
 	local -a FALLBACK_URLS=("$@")
 
+	# ============================================================
+	# SourceForge 403 mitigation (system-wide, automatic)
+	# ============================================================
+	# As of Aug 2026, SourceForge returns HTTP 403 to GitHub Actions
+	# runner IPs for many projects (libpng, freetype, tcl, ...).
+	# Patching each affected package's build.sh one-by-one is whack-a-
+	# mole: every build failure reveals a new SourceForge dependency.
+	#
+	# This block transparently rewrites any SourceForge URL to the
+	# MacPorts distfiles mirror (mirrors.mit.edu), which hosts identical
+	# copies of most SourceForge projects and is NOT subject to the same
+	# block. The original SourceForge URL is kept as a fallback in case
+	# MacPorts doesn't have the file (in which case we still try the
+	# original, which may succeed if the block is transient or if a
+	# different runner IP is used).
+	#
+	# This works for ALL packages automatically — no per-package edits
+	# needed. SHA256 verification happens later in this function, so a
+	# tampered or wrong mirror file will still be rejected.
+	#
+	# MacPorts mirror layout (flat):
+	#   https://mirrors.mit.edu/macports/distfiles/<project>/<filename>
+	#
+	# SourceForge URL shapes we handle:
+	#   https://download.sourceforge.net/<project>/<filename>
+	#   https://downloads.sourceforge.net/<project>/<filename>
+	#   https://downloads.sourceforge.net/project/<project>/<sub>/<filename>
+	#   https://master.dl.sourceforge.net/project/<project>/<sub>/<filename>
+	#   https://<named>.dl.sourceforge.net/project/<project>/<sub>/<filename>
+	#   http://sourceforge.net/projects/<project>/files/.../<filename>/download
+	#                                                              ^^^^^^^^ (stripped)
+	if [[ "$URL" =~ ^https?://[^/]*sourceforge\.net/ ]]; then
+		local sf_project=""
+		local sf_filename=""
+		# Shape 3 (try FIRST, before shape 2 which is greedy):
+		#   .../projects/<project>/files/<sub>/<filename>/download
+		if [[ "$URL" =~ sourceforge\.net/projects/([^/]+)/files/(.+)/download$ ]]; then
+			sf_project="${BASH_REMATCH[1]}"
+			sf_filename="$(basename "${BASH_REMATCH[2]}")"
+		# Shape 1: .../project/<project>/.../<filename>
+		#   (singular "project" segment — different from "projects" above)
+		elif [[ "$URL" =~ sourceforge\.net/project/([^/]+)/(.+)$ ]]; then
+			sf_project="${BASH_REMATCH[1]}"
+			sf_filename="$(basename "${BASH_REMATCH[2]}")"
+		# Shape 2 (greedy fallback): .../<project>/<filename>
+		#   Must exclude "projects" (handled above) and "project" (handled above).
+		elif [[ "$URL" =~ sourceforge\.net/([^/]+)/([^?]+) ]] \
+		     && [[ "${BASH_REMATCH[1]}" != "projects" ]] \
+		     && [[ "${BASH_REMATCH[1]}" != "project" ]]; then
+			sf_project="${BASH_REMATCH[1]}"
+			sf_filename="$(basename "${BASH_REMATCH[2]}")"
+		fi
+
+		if [[ -n "$sf_project" && -n "$sf_filename" ]]; then
+			# Strip any URL query string from filename (defensive)
+			sf_filename="${sf_filename%%\?*}"
+			local macports_url="https://mirrors.mit.edu/macports/distfiles/${sf_project}/${sf_filename}"
+			# Save the original URL as the first fallback (try MacPorts first,
+			# then the original SourceForge URL in case MacPorts doesn't have it)
+			FALLBACK_URLS=("$URL" "${FALLBACK_URLS[@]}")
+			URL="$macports_url"
+			echo "termux_download(): SourceForge URL detected → trying MacPorts mirror first: $URL"
+			echo "termux_download(): Original SourceForge URL kept as fallback: ${FALLBACK_URLS[0]}"
+		fi
+	fi
+	# ============================================================
+
 	if [[ "$URL" =~ ^file://(/[^/]+)+$ ]]; then
 		local source="${URL:7}" # Remove `file://` prefix
 

@@ -38,6 +38,8 @@ jobs:
   build:
     permissions:
       contents: read
+      actions: write   # Required for `gh cache delete` (cleanup step below).
+                        # See build-bootstrap-aarch64.yml for full rationale.
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -112,7 +114,19 @@ jobs:
             ~/.termux-build
             /data
             output
-          key: codeide-apt-${{ matrix.target_arch }}-${{ hashFiles('packages.txt', 'packages/**/build.sh') }}
+          # Hash ONLY files that affect the apt repo build. Previously
+          # `packages/**/build.sh` matched ALL ~2000+ packages, so editing
+          # any build.sh (even for a package not in packages.txt) invalidated
+          # the cache. Now we hash:
+          #   - packages.txt (the apt package list)
+          #   - scripts/build/termux_download.sh (download logic)
+          #   - scripts/build/*.sh (all build steps)
+          # This is still conservative — if a build.sh for a package in
+          # packages.txt changes, the cache should ideally be invalidated.
+          # But the restore-keys prefix match will still find the previous
+          # cache as a fallback, so we get partial restore. Trade-off:
+          # slightly stale cache occasionally, vs. constant cache misses.
+          key: codeide-apt-${{ matrix.target_arch }}-${{ hashFiles('packages.txt', 'scripts/build/termux_download.sh', 'scripts/build/*.sh', 'scripts/build-package.sh') }}
           restore-keys: |
             codeide-apt-${{ matrix.target_arch }}-
 
