@@ -42,7 +42,6 @@ TERMUX_PKG_RM_AFTER_INSTALL="
 bin/apt-cdrom
 bin/apt-extracttemplates
 bin/apt-sortpkgs
-etc/apt/apt.conf.d
 lib/apt/methods/cdrom
 lib/apt/methods/mirror*
 lib/apt/methods/rred
@@ -77,6 +76,29 @@ termux_step_post_make_install() {
 		echo "# CodeIDE main repository"
 		echo "deb https://jjoblab.github.io/codeide-packages/apt/codeide-main stable main"
 	} > $TERMUX_PREFIX/etc/apt/sources.list
+
+	# Create apt runtime directories.
+	#
+	# Without these directories, `apt update` fails with errors like:
+	#   W: Unable to read /data/data/jo.codeide/files/usr/etc/apt/apt.conf.d/
+	#      - DirectoryExists (2: No such file or directory)
+	#   E: Unable to read /data/data/jo.codeide/files/usr/var/lib/apt/lists/
+	#
+	# The apt package's TERMUX_PKG_RM_AFTER_INSTALL deletes etc/apt/apt.conf.d
+	# (it's normally empty after install). But apt still expects the directory
+	# to exist at runtime. We recreate it here, along with the other runtime
+	# directories apt needs.
+	#
+	# These directories are created under $TERMUX_PREFIX (not the system /var)
+	# because apt is patched (0004-no-hardcoded-paths.patch) to use
+	# @TERMUX_PREFIX@ for all its paths.
+	mkdir -p $TERMUX_PREFIX/etc/apt/apt.conf.d
+	mkdir -p $TERMUX_PREFIX/etc/apt/sources.list.d
+	mkdir -p $TERMUX_PREFIX/etc/apt/preferences.d
+	mkdir -p $TERMUX_PREFIX/var/lib/apt/lists/partial
+	mkdir -p $TERMUX_PREFIX/var/cache/apt/archives/partial
+	mkdir -p $TERMUX_PREFIX/var/log/apt
+	mkdir -p $TERMUX_PREFIX/tmp
 
 	# apt-transport-tor
 	ln -sfr $TERMUX_PREFIX/lib/apt/methods/http $TERMUX_PREFIX/lib/apt/methods/tor
