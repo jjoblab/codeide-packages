@@ -74,7 +74,48 @@ jobs:
           mkdir -p ~/.termux-build
           mkdir -p output
 
+      - name: Cleanup stale Actions caches (prevent 10 GB quota eviction)
+        # The repo's Actions cache quota is 10 GB. With two workflows
+        # (bootstrap + apt) each caching ~/.termux-build + /data + output,
+        # we easily exceed it (14+ GB observed). When the quota is exceeded,
+        # GitHub evicts the OLDEST caches first — which are exactly the
+        # ones we want to keep (they contain the fully-built state from a
+        # previous successful run). When a needed cache gets evicted, the
+        # build has to re-download every source tarball from scratch, and
+        # unreliable upstreams (SourceForge 403) cause hard failures.
+        #
+        # This step deletes ALL existing caches for this workflow's prefix
+        # EXCEPT the most recent one. We always start from a clean slate:
+        # the previous run's cache is restored, and at the end of this run
+        # a new cache is saved. This keeps total cache usage bounded to
+        # ~1 cache per workflow instead of accumulating one per cache-key
+        # change (which happens every time a build.sh is edited).
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "=== Listing existing caches for this workflow ==="
+          CACHE_LIST=$(gh cache list --key codeide-bootstrap-aarch64- --json key,createdAt,id --limit 100 2>/dev/null || echo "[]")
+          COUNT=$(echo "$CACHE_LIST" | jq 'length')
+          echo "Found $COUNT cache(s) with prefix 'codeide-bootstrap-aarch64-'"
+          if [ "$COUNT" -le 1 ]; then
+            echo "✓ Nothing to clean (≤1 cache exists)."
+            exit 0
+          fi
+          # Keep the most recent, delete the rest
+          TO_DELETE=$(echo "$CACHE_LIST" | jq -r 'sort_by(.createdAt) | reverse | .[1:] | .[] | .id')
+          for id in $TO_DELETE; do
+            echo "  → Deleting cache id=$id"
+            gh cache delete "$id" || true
+          done
+          echo "✓ Cleanup done. Kept the 1 most recent cache."
+
       - name: Cache termux build directories
+        # NOTE: `save-always: true` was removed — it's deprecated
+        # (see warning in build log) and causes caches to be saved even
+        # on failed runs, which is exactly how broken/partial state
+        # ends up cached and causes mysterious future failures.
+        # We only want to cache a SUCCESSFUL build.
         uses: actions/cache@v4
         with:
           path: |
@@ -84,7 +125,6 @@ jobs:
           key: codeide-bootstrap-aarch64-${{ hashFiles('bootstrap-packages.txt', 'packages/**/build.sh', 'scripts/build-bootstraps.sh', 'scripts/properties.sh') }}
           restore-keys: |
             codeide-bootstrap-aarch64-
-          save-always: true
 
       - name: Build bootstrap (natif jo.codeide, aarch64 only)
         # build-bootstraps.sh reads `bootstrap-packages.txt` and builds

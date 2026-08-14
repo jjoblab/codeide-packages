@@ -78,7 +78,34 @@ jobs:
           mkdir -p ~/.termux-build
           mkdir -p output
 
+      - name: Cleanup stale Actions caches (prevent 10 GB quota eviction)
+        # See build-bootstrap-aarch64.yml for the full rationale.
+        # In short: the repo is over its 10 GB Actions cache quota, which
+        # causes GitHub to evict old caches — including the ones we still
+        # need. This step keeps only the 1 most recent cache for this
+        # workflow+arch, deleting older ones so the total stays bounded.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          CACHE_KEY_PREFIX="codeide-apt-${{ matrix.target_arch }}-"
+          echo "=== Listing existing caches for prefix '$CACHE_KEY_PREFIX' ==="
+          CACHE_LIST=$(gh cache list --key "$CACHE_KEY_PREFIX" --json key,createdAt,id --limit 100 2>/dev/null || echo "[]")
+          COUNT=$(echo "$CACHE_LIST" | jq 'length')
+          echo "Found $COUNT cache(s)"
+          if [ "$COUNT" -le 1 ]; then
+            echo "✓ Nothing to clean (≤1 cache exists)."
+            exit 0
+          fi
+          TO_DELETE=$(echo "$CACHE_LIST" | jq -r 'sort_by(.createdAt) | reverse | .[1:] | .[] | .id')
+          for id in $TO_DELETE; do
+            echo "  → Deleting cache id=$id"
+            gh cache delete "$id" || true
+          done
+          echo "✓ Cleanup done. Kept the 1 most recent cache."
+
       - name: Cache termux build directories
+        # `save-always: true` removed (deprecated, saves broken state on failure).
         uses: actions/cache@v4
         with:
           path: |
@@ -88,7 +115,6 @@ jobs:
           key: codeide-apt-${{ matrix.target_arch }}-${{ hashFiles('packages.txt', 'packages/**/build.sh') }}
           restore-keys: |
             codeide-apt-${{ matrix.target_arch }}-
-          save-always: true
 
       - name: Build packages (natif jo.codeide, depuis les sources)
         # ★ Build NATIF — sans -I. On NE télécharge PAS de .deb précompilés
