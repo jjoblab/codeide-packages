@@ -4,13 +4,34 @@ TERMUX_PKG_LICENSE="custom"
 TERMUX_PKG_LICENSE_FILE="license.terms"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="8.6.16"
-# downloads.sourceforge.net has been returning 403 for this file from CI
-# runners since at least Aug 13 2026 (see failed 'apt' bootstrap build).
-# master.dl.sourceforge.net serves the exact same file directly (no mirror
-# selection page, no repackaging) so the checksum below is unchanged; the
-# old URL is kept as a fallback in case this was a transient block.
+# Both master.dl.sourceforge.net AND downloads.sourceforge.net return 403
+# for this file from GitHub Actions runners (confirmed Aug 13 2026, see
+# failed 'apt' bootstrap build — 6 attempts, both hosts, all 403). This is
+# SourceForge's edge/anti-bot layer blocking the runner's datacenter IP
+# range, not a broken URL, so swapping between those two auto-selector
+# hosts alone doesn't help: they sit behind the same frontend.
+#
+# Fix: bypass the auto-selector entirely and hit named mirror nodes
+# directly (each is a distinct backend, not guaranteed to share the same
+# block) — same file, same checksum, just served from a specific mirror
+# instead of being geo/IP-routed by SourceForge's front door. Also keep
+# the legacy no-/project/-prefix alias, which is occasionally routed
+# differently than the versioned path. If SourceForge blocks the runner's
+# IP range at the network level (not just the front-end), none of these
+# will help either — in that case just re-run the workflow (the block
+# tends to be tied to the runner's transient IP, not permanent) and once
+# the download succeeds once, the "Cache termux build directories" step
+# keeps it cached for subsequent runs.
 TERMUX_PKG_SRCURL=https://master.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz
-TERMUX_PKG_SRCURL_FALLBACKS=("https://downloads.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz")
+TERMUX_PKG_SRCURL_FALLBACKS=(
+	"https://downloads.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+	"https://downloads.sourceforge.net/tcl/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+	"https://kumisystems.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+	"https://excellmedia.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+	"https://netcologne.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+	"https://phoenixnap.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+	"https://versaweb.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+)
 TERMUX_PKG_SHA256=91cb8fa61771c63c262efb553059b7c7ad6757afa5857af6265e4b0bdc2a14a5
 TERMUX_PKG_AUTO_UPDATE=false
 TERMUX_PKG_DEPENDS="zlib"
