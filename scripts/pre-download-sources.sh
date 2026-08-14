@@ -186,6 +186,23 @@ pre_download \
     || FAILED=1
 echo ""
 
+# --- fontconfig (dependency of many graphical packages) ---
+# gitlab.freedesktop.org deploys Anubis anti-bot protection that returns
+# HTML instead of the tarball to automated downloads. GitHub mirror
+# (fontconfig/fontconfig) serves the EXACT same tarball (SHA256 verified).
+# NOTE: GitHub archive URL produces filename "2.18.3.tar.gz" but the
+# pre-download cache uses the basename of the URL. The build.sh uses
+# the same GitHub URL so the filenames match.
+echo "=== fontconfig 2.18.3 ==="
+pre_download \
+    "9ae01e1d53acdef56010c5451cd34aa41d325b2faccd8606448d8fa01b2496b3" \
+    "${TERMUX_BUILD_DIR}/fontconfig/cache" \
+    "2.18.3.tar.gz" \
+    "https://github.com/fontconfig/fontconfig/archive/refs/tags/2.18.3.tar.gz" \
+    "https://gitlab.freedesktop.org/fontconfig/fontconfig/-/archive/2.18.3/fontconfig-2.18.3.tar.gz" \
+    || FAILED=1
+echo ""
+
 echo "============================================================"
 if [ "$FAILED" -eq 0 ]; then
     echo "✅ All sources pre-downloaded successfully!"

@@ -3,7 +3,19 @@ TERMUX_PKG_DESCRIPTION="Library for configuring and customizing font access"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="2.18.3"
-TERMUX_PKG_SRCURL=https://gitlab.freedesktop.org/fontconfig/fontconfig/-/archive/$TERMUX_PKG_VERSION/fontconfig-$TERMUX_PKG_VERSION.tar.gz
+# As of Aug 2026, gitlab.freedesktop.org deploys Anubis anti-bot protection
+# which returns an HTML challenge page instead of the tarball to automated
+# downloads (GitHub Actions runners). The HTML page has a different SHA256
+# than the real tarball, causing "Wrong checksum" build failures.
+#
+# The fontconfig/fontconfig repo on GitHub is an official mirror and serves
+# the EXACT same tarball (SHA256 verified: 9ae01e1d... matches on both).
+# GitHub does not deploy Anubis, so downloads from GH Actions runners work.
+# GitLab URL kept as fallback in case GitHub is temporarily unavailable.
+TERMUX_PKG_SRCURL=https://github.com/fontconfig/fontconfig/archive/refs/tags/$TERMUX_PKG_VERSION.tar.gz
+TERMUX_PKG_SRCURL_FALLBACKS=(
+        "https://gitlab.freedesktop.org/fontconfig/fontconfig/-/archive/$TERMUX_PKG_VERSION/fontconfig-$TERMUX_PKG_VERSION.tar.gz"
+)
 TERMUX_PKG_SHA256=9ae01e1d53acdef56010c5451cd34aa41d325b2faccd8606448d8fa01b2496b3
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="freetype, libexpat, ttf-dejavu"
@@ -18,6 +30,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 "
 
 termux_step_pre_configure() {
-	export ac_cv_va_copy=C99
-	autoreconf -fi
+        export ac_cv_va_copy=C99
+        autoreconf -fi
 }
