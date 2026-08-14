@@ -11,7 +11,7 @@
 # dist.schmorp.de occasionally returns 404 for files that are normally
 # present in both `Attic/` and the top-level directory).
 termux_download() {
-	if [[ $# < 2 ]]; then
+	if [[ $# -lt 2 ]]; then
 		echo "termux_download(): Invalid arguments - expected <URL> <DESTINATION> [<CHECKSUM>] [<FALLBACK_URL>...]" 1>&2
 		return 1
 	fi
