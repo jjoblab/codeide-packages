@@ -4,26 +4,28 @@ TERMUX_PKG_LICENSE="custom"
 TERMUX_PKG_LICENSE_FILE="license.terms"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="8.6.16"
-# Named SourceForge mirrors are listed below as fallbacks in case the
-# auto-selector host (master.dl.sourceforge.net) is ever slow or
-# temporarily unavailable. Keep the legacy no-/project/-prefix alias too,
-# since it's occasionally routed differently than the versioned path.
+# As of Aug 14 2026, GitHub Actions runners are getting a genuine HTTP 403
+# from BOTH master.dl.sourceforge.net and downloads.sourceforge.net for this
+# file (confirmed in two separate workflow runs, ~20 min apart) — this is
+# SourceForge itself blocking/rate-limiting the request, not a broken URL.
+# The previously-listed named mirrors (kumisystems, excellmedia, netcologne,
+# phoenixnap, versaweb) don't even resolve in DNS anymore, so they were
+# pure dead weight (each added ~1 min of wasted retries).
 #
-# Note: the previous build failure for this package ("Invalid arguments -
-# expected <URL> <DESTINATION> ...") was NOT caused by SourceForge — it was
-# a bash bug in termux_download() (scripts/build/termux_download.sh), where
-# `[[ $# < 2 ]]` did a lexicographic string comparison instead of a numeric
-# one, so $#=10 (this package's URL+DEST+CHECKSUM+7 fallbacks) was wrongly
-# treated as less than 2. Fixed there with `-lt`.
-TERMUX_PKG_SRCURL=https://master.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz
+# Primary fallback is now MacPorts' own distfiles mirror (mirrors.mit.edu),
+# which caches the exact same upstream tarball independently of SourceForge
+# and isn't subject to the same block. SourceForge URLs are kept after it
+# in case the block is transient.
+#
+# (Earlier note, unrelated to the above: a previous build failure with
+# "Invalid arguments - expected <URL> <DESTINATION> ..." was a bash bug in
+# termux_download() — `[[ $# < 2 ]]` did a lexicographic string comparison,
+# so $#=10 was wrongly treated as less than 2. Fixed there with `-lt`.)
+TERMUX_PKG_SRCURL=https://mirrors.mit.edu/macports/distfiles/tcl/tcl${TERMUX_PKG_VERSION}-src.tar.gz
 TERMUX_PKG_SRCURL_FALLBACKS=(
 	"https://downloads.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
 	"https://downloads.sourceforge.net/tcl/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
-	"https://kumisystems.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
-	"https://excellmedia.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
-	"https://netcologne.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
-	"https://phoenixnap.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
-	"https://versaweb.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
+	"https://master.dl.sourceforge.net/project/tcl/Tcl/${TERMUX_PKG_VERSION}/tcl${TERMUX_PKG_VERSION}-src.tar.gz"
 )
 TERMUX_PKG_SHA256=91cb8fa61771c63c262efb553059b7c7ad6757afa5857af6265e4b0bdc2a14a5
 TERMUX_PKG_AUTO_UPDATE=false
