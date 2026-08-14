@@ -6,12 +6,23 @@
 # As of Aug 2026, SourceForge returns HTTP 403 to GitHub Actions
 # runner IPs. This script pre-downloads ALL source tarballs that
 # are normally hosted on SourceForge from alternative mirrors
-# (GitHub releases, MacPorts distfiles, Ubuntu archive, Fossies)
-# and places them in the termux build cache.
+# (GitHub releases, MacPorts distfiles, Ubuntu archive, NetBSD
+# distfiles, Fossies) and places them in the termux build cache.
 #
 # When the actual build runs, termux_download() finds the files
 # already on disk with matching SHA256 and skips downloading.
 # This completely eliminates SourceForge 403 failures.
+#
+# DUAL USER-AGENT STRATEGY:
+#   Different mirrors require different User-Agents:
+#   - GitHub releases: requires a browser-like UA (Chrome). Returns
+#     404 for Wget/curl UAs.
+#   - Fossies: blocks browser UAs that don't execute JavaScript
+#     (anti-robot check, returns 401). ALLOWS Wget UA.
+#   - MacPorts, Ubuntu, NetBSD: work with any UA.
+#
+#   This script tries EACH URL with BOTH User-Agents (Chrome first,
+#   then Wget) so all mirrors are reachable.
 #
 # This script is safe to run multiple times — it skips files
 # that already exist with the correct checksum.
@@ -19,17 +30,15 @@
 # Usage: ./scripts/pre-download-sources.sh
 # ============================================================
 
-set -euo pipefail
+set -uo pipefail   # NOT -e: we want to continue even if some downloads fail
 
-# The termux build cache directory (same as $HOME/.termux-build on the host,
-# which is mounted into the Docker container via run-docker.sh -m).
 TERMUX_BUILD_DIR="${HOME}/.termux-build"
 
-# User agent that works with GitHub releases (required — GitHub returns 404
-# for release asset downloads without a User-Agent header).
-USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+# Two User-Agents for the dual-UA strategy
+UA_BROWSER="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+UA_WGET="Wget/1.21"
 
-# Download a file from one or more URLs, trying each in order.
+# Download a file from one or more URLs, trying each URL with both UAs.
 # Arguments: <sha256> <cache_dir> <filename> <url1> [url2] [url3]...
 pre_download() {
     local expected_sha="$1"
@@ -53,29 +62,32 @@ pre_download() {
         rm -f "$dest"
     fi
 
-    # Try each URL in order
+    # Try each URL with each User-Agent
     for url in "${urls[@]}"; do
-        echo "  → Trying: ${url}"
-        if curl -sL --fail \
-                --max-time 120 \
-                --connect-timeout 30 \
-                --retry 3 \
-                --retry-delay 10 \
-                -A "$USER_AGENT" \
-                -o "$dest" "$url" 2>/dev/null; then
-            local actual_sha
-            actual_sha=$(sha256sum "$dest" | cut -d' ' -f1)
-            if [[ "$actual_sha" == "$expected_sha" ]]; then
-                echo "  ✓ Downloaded: ${filename} (${actual_sha:0:12}...)"
-                return 0
+        for ua in "$UA_BROWSER" "$UA_WGET"; do
+            echo "  → Trying: ${url}"
+            echo "    UA: $(echo "$ua" | head -c 40)..."
+            if curl -sL --fail \
+                    --max-time 120 \
+                    --connect-timeout 30 \
+                    --retry 2 \
+                    --retry-delay 5 \
+                    -A "$ua" \
+                    -o "$dest" "$url" 2>/dev/null; then
+                local actual_sha
+                actual_sha=$(sha256sum "$dest" | cut -d' ' -f1)
+                if [[ "$actual_sha" == "$expected_sha" ]]; then
+                    echo "  ✓ Downloaded: ${filename} (${actual_sha:0:12}...)"
+                    return 0
+                else
+                    echo "  ✗ SHA256 mismatch (got ${actual_sha:0:12}...)"
+                    rm -f "$dest"
+                fi
             else
-                echo "  ✗ SHA256 mismatch (got ${actual_sha:0:12}...)"
+                echo "  ✗ Download failed (HTTP error or timeout)"
                 rm -f "$dest"
             fi
-        else
-            echo "  ✗ Download failed"
-            rm -f "$dest"
-        fi
+        done
     done
 
     echo "  ❌ FAILED to download ${filename} from any mirror"
@@ -84,13 +96,17 @@ pre_download() {
 
 echo "============================================================"
 echo "Pre-downloading SourceForge-dependent sources from reliable"
-echo "mirrors (GitHub releases, MacPorts, Ubuntu archive, Fossies)"
+echo "mirrors (MacPorts, GitHub releases, Ubuntu, NetBSD, Fossies)"
+echo ""
+echo "Dual User-Agent strategy: tries Chrome UA first, then Wget UA"
+echo "for each URL (different mirrors require different UAs)."
 echo "============================================================"
 echo ""
 
 FAILED=0
 
 # --- tcl (dependency of libsqlite, python, etc.) ---
+# Verified mirrors: MacPorts ✓ (Chrome UA)
 echo "=== tcl 8.6.16 ==="
 pre_download \
     "91cb8fa61771c63c262efb553059b7c7ad6757afa5857af6265e4b0bdc2a14a5" \
@@ -102,6 +118,7 @@ pre_download \
 echo ""
 
 # --- libpng (dependency of freetype, fontconfig, etc.) ---
+# Verified mirrors: MacPorts ✓ (Chrome UA)
 echo "=== libpng 1.6.58 ==="
 pre_download \
     "28eb403f51f0f7405249132cecfe82ea5c0ef97f1b32c5a65828814ae0d34775" \
@@ -113,29 +130,37 @@ pre_download \
 echo ""
 
 # --- freetype (dependency of fontconfig, etc.) ---
+# Verified mirrors: MacPorts ✓, savannah ✓ (Chrome UA)
 echo "=== freetype 2.14.3 ==="
 pre_download \
     "36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f" \
     "${TERMUX_BUILD_DIR}/freetype/cache" \
     "freetype-2.14.3.tar.xz" \
     "https://mirrors.mit.edu/macports/distfiles/freetype/freetype-2.14.3.tar.xz" \
-    "https://downloads.sourceforge.net/freetype/freetype-2.14.3.tar.xz" \
     "https://download.savannah.nongnu.org/releases/freetype/freetype-2.14.3.tar.xz" \
+    "https://downloads.sourceforge.net/freetype/freetype-2.14.3.tar.xz" \
     || FAILED=1
 echo ""
 
 # --- ttf-dejavu (dependency of fontconfig) ---
+# Verified mirrors:
+#   GitHub releases ✓ (Chrome UA, SHA256 fa9ca4d13871dd122f61258a80d01751d603b4d3...)
+#   NetBSD distfiles ✓ (Chrome UA, same SHA256)
 echo "=== ttf-dejavu 2.37 ==="
 pre_download \
     "fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7" \
     "${TERMUX_BUILD_DIR}/ttf-dejavu/cache" \
     "dejavu-fonts-ttf-2.37.tar.bz2" \
     "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2.37/dejavu-fonts-ttf-2.37.tar.bz2" \
+    "https://cdn.netbsd.org/pub/pkgsrc/distfiles/dejavu-fonts-ttf-2.37.tar.bz2" \
     "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.tar.bz2" \
     || FAILED=1
 echo ""
 
 # --- tk (dependency of python, etc.) ---
+# Verified mirrors: Ubuntu archive ✓ (Chrome UA, SHA256 8ffdb720f47a6ca6107eac2d...)
+# NOTE: Ubuntu archive has different filename (tk8.6_8.6.14.orig.tar.gz) but
+#       same content/SHA256 as SourceForge's tk8.6.14-src.tar.gz.
 echo "=== tk 8.6.14 ==="
 pre_download \
     "8ffdb720f47a6ca6107eac2dd877e30b0ef7fac14f3a84ebbd0b3612cee41a94" \
@@ -147,6 +172,9 @@ pre_download \
 echo ""
 
 # --- swig (dependency of python, etc.) ---
+# Verified mirrors: Fossies ✓ (Wget UA, SHA256 22ae0e887f8cca8031a325c67d005207653200b4...)
+# Fossies blocks Chrome UA (401 anti-robot) but ALLOWS Wget UA.
+# The dual-UA strategy in pre_download() handles this automatically.
 echo "=== swig 4.5.0 ==="
 pre_download \
     "22ae0e887f8cca8031a325c67d005207653200b40e71edb3f88780e28e47d0ff" \
@@ -161,8 +189,10 @@ echo ""
 echo "============================================================"
 if [ "$FAILED" -eq 0 ]; then
     echo "✅ All sources pre-downloaded successfully!"
+    echo "   The build will find all files in cache and skip downloading."
 else
     echo "⚠️  Some sources failed to pre-download."
-    echo "   The build will try to download them itself (may fail on SourceForge 403)."
+    echo "   The build will try to download them itself."
+    echo "   If the build also fails, the mirror may be temporarily down."
 fi
 echo "============================================================"
