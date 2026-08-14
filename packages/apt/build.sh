@@ -75,7 +75,7 @@ termux_step_pre_configure() {
 termux_step_post_make_install() {
 	{
 		echo "# CodeIDE main repository"
-		echo "deb https://jjoblab.github.io/codeide-terminal-pkg/apt/codeide-main stable main"
+		echo "deb https://jjoblab.github.io/codeide-packages/apt/codeide-main stable main"
 	} > $TERMUX_PREFIX/etc/apt/sources.list
 
 	# apt-transport-tor
