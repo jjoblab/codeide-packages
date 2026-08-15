@@ -102,6 +102,20 @@ SHA512: 35a1656a591063b115b9bb3a594940b97e4b6c9126325b9d332c16310e378354022dc6ee
 Description: glib for host (NOT for Termux)
 Homepage: https://developer.gnome.org/glib/
 
+Package: openjdk-17-source
+Installed-Size: 50792
+Maintainer: @termux
+Architecture: all
+Version: 17.0.20
+Filename: pool/main/o/openjdk-17-source/openjdk-17-source_17.0.20_all.deb
+Size: 47123136
+MD5sum: 2448e165213806d967ffb1efbd7c49c2
+SHA1: 1693c0b78ebe7c3f2d3d4c9f3574615724d3f364
+SHA256: 84a3c0df4ca7fc55f337a3f712df9db0705aaa65e9b20992aefa07b9fd86098f
+SHA512: 32a348548227a5ebe8dc9a239b1f9be63b77aa68202613d7ed8d23dfee76e0becae5af331e600667c5c190abec6d71b3697daca84c149e0d4d6f996f99efb1e1
+Description: Source files for openjdk-17
+Homepage: https://openjdk.java.net
+
 Package: python-ensurepip-wheels
 Installed-Size: 1812
 Maintainer: Yaksh Bariya <thunder-coding@termux.dev>
@@ -213,6 +227,21 @@ SHA256: 5c821acd6749a204162d69b175028e7d1c8d1c8d72ed81d4895b7fd1900c8839
 SHA512: f5e4040cad392a3cb5d3a579e788517f4080a5ab08c1558eb084ced35d1292c35bc130e3430d3643e64da6b9f5e0e6ddc28d7d5de92fc709b7dbfcac6f08eeca
 Description: Font family based on the Bitstream Vera Fonts with a wider range of characters
 Homepage: https://dejavu-fonts.github.io/
+
+Package: update-info-dir
+Installed-Size: 48
+Maintainer: @termux
+Architecture: all
+Version: 7.3
+Depends: texinfo (= 7.3)
+Filename: pool/main/u/update-info-dir/update-info-dir_7.3_all.deb
+Size: 2484
+MD5sum: 19bc6813f44e49f24dae891e7201b713
+SHA1: e8c27382a04d65817a8023f0abcf907691e87b28
+SHA256: aafddb83c46eb02da38c97bda49071d42c4ac216c4487ac75fff629fda454f1b
+SHA512: dc30aa612b72523c6c70d36910e775fa9f1cc9662eda8b7a10be9712d0645dc230038eed447a10b07884105cfc8801e57c3df2405e1ac0826fcf0a2e3c424fda
+Description: Update or create index file from all installed info files in directory
+Homepage: https://www.gnu.org/software/texinfo/
 
 Package: xcb-proto
 Installed-Size: 812
