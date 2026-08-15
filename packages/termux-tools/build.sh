@@ -78,6 +78,32 @@ termux_step_post_make_install() {
 		! -name "*.png" ! -name "*.jpg" ! -name "*.so" ! -name "*.a" \
 		-print0 2>/dev/null)
 	echo "[termux-tools] Patched $patched file(s) with /data/data/com.termux → /data/data/$TERMUX_APP_PACKAGE"
+
+	# Replace the 'pkg' wrapper with a simplified version that just calls apt.
+	#
+	# The original Termux 'pkg' script checks mirror availability and can
+	# switch sources.list to a different Termux mirror. This is useful for
+	# Termux (which has many mirrors) but HARMFUL for CodeIDE:
+	#   - CodeIDE has only ONE repository (GitHub Pages), no mirrors
+	#   - pkg checks for 'dists/stable/InRelease' which doesn't exist in
+	#     CodeIDE repo (we use Release, not InRelease)
+	#   - So pkg marks CodeIDE repo as "bad" and tries ALL Termux mirrors
+	#   - Result: 'pkg install' fails with mirror errors
+	#
+	# Fix: replace pkg with a simple wrapper that just calls apt.
+	local pkg_script="$TERMUX_PREFIX/bin/pkg"
+	if [ -f "$pkg_script" ]; then
+		echo "[termux-tools] Replacing pkg wrapper with simple apt passthrough..."
+                cat > "$pkg_script" << 'PKG_EOF'
+#!@TERMUX_PREFIX@/bin/sh
+# CodeIDE pkg wrapper — simplified version.
+# Original Termux pkg checks mirrors; CodeIDE has only one repo.
+exec apt "$@"
+PKG_EOF
+		sed -i "s|@TERMUX_PREFIX@|$TERMUX_PREFIX|g" "$pkg_script"
+		chmod 700 "$pkg_script"
+		echo "[termux-tools] pkg wrapper replaced → simple apt passthrough"
+	fi
 }
 
 termux_step_create_debscripts() {

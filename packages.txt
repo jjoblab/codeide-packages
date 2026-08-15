@@ -16,9 +16,8 @@
 #   or
 #     apt install <name>
 #
-# IMPORTANT: This repository focuses on the minimal terminal runtime.
-# Java, Gradle, Android SDK, AAPT2, D8, R8, NDK are NOT included — they
-# will be added in a later "CodeIDE Android Toolchain" phase.
+# IMPORTANT: This repository focuses on the minimal terminal runtime + Java.
+# Android SDK, AAPT2, D8, R8, NDK will be added in a later phase.
 #
 # One package name per line. Comments start with `#`. Blank lines ignored.
 # ---------------------------------------------------------------------------
@@ -59,6 +58,9 @@ python
 python-pip
 nodejs
 
+# Java development kit (needed by CodeIDE for Gradle Tooling API + LSP)
+openjdk-17
+
 # Networking utilities
 net-tools
 inetutils
@@ -69,3 +71,4 @@ jq
 file
 which
 patch
+tree
