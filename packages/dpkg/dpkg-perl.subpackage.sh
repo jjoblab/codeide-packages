@@ -21,20 +21,20 @@ TERMUX_SUBPKG_PLATFORM_INDEPENDENT=true
 # Users who actually need Locale::gettext can install clang manually
 # and run `cpan -Ti Locale::gettext` themselves.
 #
-# The `cpan` call in the postinst is wrapped in `set -e`, so if it fails
-# the postinst will fail. We remove the `set -e` and make the cpan call
-# non-fatal so the package installs cleanly even without clang.
+# The `cpan` call in the postinst is non-fatal (uses `|| echo` instead
+# of `set -e`) so the package installs cleanly even without clang.
 
 termux_step_create_subpkg_debscripts() {
-        cat <<- POSTINST_EOF > ./postinst
-        #!$TERMUX_PREFIX/bin/bash
-        # Don't use 'set -e' — the cpan call may fail if clang is not installed,
-        # but that shouldn't fail the whole package installation.
-        export PERL_MM_USE_DEFAULT=1
+	cat > ./postinst <<POSTINST_EOF
+#!$TERMUX_PREFIX/bin/bash
+# CodeIDE dpkg-perl postinst
+# Don't use 'set -e' - the cpan call may fail if clang is not installed,
+# but that shouldn't fail the whole package installation.
+export PERL_MM_USE_DEFAULT=1
 
-        echo "Sideloading Perl Locale::gettext ..."
-        cpan -Ti Locale::gettext 2>/dev/null || echo "Warning: cpan Locale::gettext failed (clang not installed?) — skipping"
+echo "Sideloading Perl Locale::gettext ..."
+cpan -Ti Locale::gettext 2>/dev/null || echo "Warning: cpan Locale::gettext failed (clang not installed?) - skipping"
 
-        exit 0
-        POSTINST_EOF
+exit 0
+POSTINST_EOF
 }
