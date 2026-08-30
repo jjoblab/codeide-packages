@@ -5,11 +5,11 @@ Architecture: all
 Version: 2.73
 Depends: m4, make, perl
 Filename: pool/main/a/autoconf/autoconf_2.73_all.deb
-Size: 624772
-MD5sum: 8febe4d1e140e7d1e2d7541e0250cb44
-SHA1: 46ac60213f0254eecad789a2c929981ca7171448
-SHA256: b6742481ecf0677d7b824f3aa89848da2b483ceffc0ba95d0df6811a1cec629b
-SHA512: 58932f18647a50a8077c5c558916ab977e827908a36f9a4e74dab6d7694857d000cb8dc1c4e33e1118df334036768f353d3a215f38003c0d8089f2fccac7a771
+Size: 624704
+MD5sum: 29b3e1e7adc4b46c8989918b3e9fc2e9
+SHA1: 4097ce2d46dad4ae7d04102084d37b61b1695f67
+SHA256: c87dfafc9b4d0c6a170be9be33cf9a7320ec31c62cbe9ca8c3290b1c8bb1ede2
+SHA512: e0f5d0c2e582d4d4b4183c13a9a1897360394701da897a44202e5e65f871da1c8d88709d938ebb23ad3ae054fd117fc39d54db62916cd2b5d6308cac720c1c19
 Description: Creator of shell scripts to configure source code packages
 Homepage: https://www.gnu.org/software/autoconf/autoconf.html
 
@@ -20,11 +20,11 @@ Architecture: all
 Version: 1.18.1
 Depends: autoconf
 Filename: pool/main/a/automake/automake_1.18.1_all.deb
-Size: 576592
-MD5sum: 81678ccdb56df38384d62c1e7098f1b1
-SHA1: 8eb28f4ecfb49a0c0ed055fab44d834791232318
-SHA256: 444fd87d40f1753bb126554eaf8b7c24bdc7278763892f166731c4149a7928c0
-SHA512: 1a6a0a0a0f4071695893ae0917c8bec8484888eb55246b6f783a8c0fbabaed8d8a646c2d81cec6f234e89f6fc066770c373cc266fb5b421d99c973f8d8af590d
+Size: 576604
+MD5sum: 89a50a8e11b0d4f6d0c2eddf298ffa0d
+SHA1: 2a46ff4f3c2b3a345cf41db0ee8f1afd891e28ec
+SHA256: 8dcdb84719dd072c1eb07b256d2bf6a22f3c5c75e11044822aa7bd1dcae3ce4f
+SHA512: ecbfe0916f736ff2d0f34fd066a9d0af1aac4fc45f372b884def878be2dfab035beeed06c22496827ba309ac3e70990423e5db059fb1d67b24de34ea596685c0
 Description: Tool for automatically generating Makefile.in files
 Homepage: https://www.gnu.org/software/automake/
 
@@ -35,11 +35,11 @@ Architecture: all
 Version: 2.18.0
 Depends: bash
 Filename: pool/main/b/bash-completion/bash-completion_2.18.0_all.deb
-Size: 194180
-MD5sum: 74a5f70c1d82ba4b8394f760304e19a7
-SHA1: 07d4797a3d65c0eb4df1bf9f3462b7cc6aae1c27
-SHA256: 99ee4007263ecc1c88474b5065039842dd5509297d1dd77a9b4489e9547a84e7
-SHA512: 745110eeab514a1dd1dd8eacaa8c968c5106c0148f1f6d2075dad76c3812d46eb9fabf0de2177ad248ad58db899c14af360c29fcebe7f6fb72f486363ddd2e57
+Size: 194204
+MD5sum: aa6e9841af6b47ca4a4ff2b0a13f1ccc
+SHA1: 98e2aa2a460dbe347785d02b976de196f2e60cb9
+SHA256: c553c4cdfbd1f6807e1863185b127a6b5bab893822d0d610429df1f6bf70b20c
+SHA512: ed3cd7a06a13f68b2047c53ab766515da4988fe087f44c775cfaa38e14073618b8c8a5c7a11d0bae5cf838784f5e5167861a8286850fba16348314816c45f402
 Description: Programmable completion for the bash shell
 Homepage: https://github.com/scop/bash-completion
 
@@ -49,11 +49,11 @@ Maintainer: @termux
 Architecture: all
 Version: 1:2026.07.16
 Filename: pool/main/c/ca-certificates/ca-certificates_1_2026.07.16_all.deb
-Size: 104208
-MD5sum: f2eeb8badf0d9d3b873a6a2f7dc57114
-SHA1: 3bb85514d0baa5a2ce5f367600b56fefde7cf7c8
-SHA256: 7562f9bf3fd88ebf56690db3bd2f4abf57e220fbb3388e1776536ada1f41721e
-SHA512: ba63f69caf133f7eea02da5fd0b17174bd370134a5a11bab6c7f0255804279881c8219d69e2fb818d87a79fc500ebe230f245ae1c40cfbc83f44a98d72ce8a2e
+Size: 104216
+MD5sum: 8e4fe3b6aafdac5c90805880dd1472ff
+SHA1: 5e10c852ec87195fda6518efe789776ee10fb3bf
+SHA256: 5ca4b698f50f8b5692197421f8149845f8dfc7b1331405d9d17c70027184c0a5
+SHA512: 116db0f1dee9a68bafebdce8486725d77496957d22b40a8c2eb79437db95af410aafaff50d2176868a71e3cf49371f6d8c2ebac7084c259a33784d255d9b3502
 Description: Common CA certificates
 Homepage: https://curl.se/docs/caextract.html
 
@@ -64,11 +64,11 @@ Architecture: all
 Version: 1:2026.07.16
 Depends: ca-certificates (= 1:2026.07.16)
 Filename: pool/main/c/ca-certificates-java/ca-certificates-java_1_2026.07.16_all.deb
-Size: 95152
-MD5sum: f7fa29430054967ef1102195f35aea3d
-SHA1: aa4f8e9dc72554fdfe619091edebc36b9eefa81d
-SHA256: a2046cadd26c6e77bfd7bcdd9ffa20c9ed6c6e148b77cda0183cb10098fdf8e9
-SHA512: 2f1d71ec87fc6da2094b24522235197f7b5e9cd5d53946bfe7ef7bc073f418f7ae2f3de195b982e7ca712d5e85ca58787e789b436f3b67b76c7161fcd263b0bf
+Size: 95140
+MD5sum: c00a1cc9a5d2fb53db10418c3f81fef4
+SHA1: 261ca8a5074b3fa221fac6fe64bbe49aa9a0f49a
+SHA256: 7125f1dd92fa15777a908072101ef8e25f32a96806c625ef8e0662816e2b4b85
+SHA512: 9e7cff2094e225c190f051603af54bcaa34a2f0f99b77d88119514be519cc89492b299badab5d33ef396826b90cb2cb01e04dbf0f7c7cfff9c494dccb65be102
 Description: Common CA certificates (java keystore format)
 Homepage: https://curl.se/docs/caextract.html
 
@@ -79,11 +79,11 @@ Architecture: all
 Version: 2.55.0
 Depends: subversion-perl, git (= 2.55.0)
 Filename: pool/main/g/git-svn/git-svn_2.55.0_all.deb
-Size: 75560
-MD5sum: a8b81c4a104dddc589e9c6db4221ca3d
-SHA1: 431466c1ffc770f9a518e2b480f382a36f7bbfa1
-SHA256: aad2ed3ea01299dc1a7c0b3eee162373619224a8249de690602362e743f9e556
-SHA512: 853429eb78c05f53f7adc880a69c1f7f8d6717bdf0972796c0d3629057645ef726ba16e23fc54bc51e777d4f2a8b82003870bfc8433ba4d9e2b5f6784f5a60c4
+Size: 75576
+MD5sum: 162861bb78dd18354da26d6245d30553
+SHA1: 833b2031d52e80a2857c888f29ecc89eeb16c5e8
+SHA256: 180301c02d6f8317f6380702d219e23491134e66162c50b2333a0bde17b156d8
+SHA512: 6b2ac86f18071d254d5c43e7bdddc14106191d70b7f3e431a50c580b1ff744063194507f58e981b2f175d22714a79359687451a55c48134ee0ef3a8a39946d21
 Description: Convert between Git and Subversion repositories
 Homepage: https://git-scm.com/
 
@@ -94,11 +94,11 @@ Architecture: all
 Version: 2.88.3
 Depends: glib (= 2.88.3)
 Filename: pool/main/g/glib-cross/glib-cross_2.88.3_all.deb
-Size: 13178624
-MD5sum: d09bda4881620253b6d9223ed875744c
-SHA1: ad5b6776d18f1d7789464d1b4ef41721c19cf1ae
-SHA256: c63da33699942e451f56fa154eb660fa8e29b6b3a370f5d0eb5a0f24dac1fd1b
-SHA512: 35a1656a591063b115b9bb3a594940b97e4b6c9126325b9d332c16310e378354022dc6eee377795b0dfd7cec14e6247749da73f60abcce35e1688bea16a018ea
+Size: 13173156
+MD5sum: a316e6026c8db233efd98b1f914eff74
+SHA1: fd78c8db6d567eb242f372afa80951c11511882d
+SHA256: 663d7e64b81888bcb66de7a55d77c01ad86b7b8f9996bd778540934e7b85af4b
+SHA512: dd4c7ba496aca24d0018d19b4e5915e8a6b68b5af18c4aa9aae709bf914fa9fac7fd5abf9729d09cd67fbd67f7a182a0de7ca524941dbdf95817ca643ec98799
 Description: glib for host (NOT for Termux)
 Homepage: https://developer.gnome.org/glib/
 
@@ -108,11 +108,11 @@ Maintainer: @termux
 Architecture: all
 Version: 17.0.20
 Filename: pool/main/o/openjdk-17-source/openjdk-17-source_17.0.20_all.deb
-Size: 47123136
-MD5sum: 2448e165213806d967ffb1efbd7c49c2
-SHA1: 1693c0b78ebe7c3f2d3d4c9f3574615724d3f364
-SHA256: 84a3c0df4ca7fc55f337a3f712df9db0705aaa65e9b20992aefa07b9fd86098f
-SHA512: 32a348548227a5ebe8dc9a239b1f9be63b77aa68202613d7ed8d23dfee76e0becae5af331e600667c5c190abec6d71b3697daca84c149e0d4d6f996f99efb1e1
+Size: 47124156
+MD5sum: 0daaa77beba48d650e9f5308f2838c9b
+SHA1: 87b4a520f1716a23cbf411ecc9518bcb651b27f1
+SHA256: 5f3b95ebcaf83ba957d0c04cbf72c0e0322b8ef159fd75b3a8321ac40b6488b9
+SHA512: a9f2d38baa0539e33b8127d3c9fa50f6908871f985ee069d59be8f52745a8b7cfa1b25956f90a1be1efc50d43d1745de7f5f2316f1873cbf72afd88d210fdfd3
 Description: Source files for openjdk-17
 Homepage: https://openjdk.java.net
 
@@ -125,11 +125,11 @@ Replaces: python (<< 3.11.1-3)
 Depends: python (= 3.14.6-1)
 Breaks: python (<< 3.11.1-3)
 Filename: pool/main/p/python-ensurepip-wheels/python-ensurepip-wheels_3.14.6-1_all.deb
-Size: 1740116
-MD5sum: 19f364cd58f17283f6fc5074fdeede14
-SHA1: ea25c048a67e6e5b020b2d6b14a88061fd81f6c8
-SHA256: 98f20354b5f25a3f255056d46af3313e34fd2e29b61052344c7eee0862687346
-SHA512: d51f8f0878794a4a44336713b46fb3e6eade838baef902d33a49d8d538d1e29263854458233d844d46ed2cedc7951710bec3b7e208b8d2cc646f528a7749b04a
+Size: 1740100
+MD5sum: 159fc8875eadf81a8c235e1fdf8acbff
+SHA1: 8b4d0bbf337db7b41b10e911c97a39d0bd7c5629
+SHA256: 95015133882be62895f70a08a2769d57a736595474fd9dd6db9ac56ab7468771
+SHA512: 0eadb3650d4fb59d90fb4b6d2e71728355c40d4546eb273ebc1903d2d1c24a316007a9b78c62cc45f9ef902814d05a56af041063009344df5876502929f10301
 Description: Wheels for Python ensurepip
 Homepage: https://python.org/
 
@@ -142,11 +142,11 @@ Depends: python (>= 3.11.1-1)
 Recommends: clang, make, pkg-config
 Breaks: python (<< 3.11.1-1)
 Filename: pool/main/p/python-pip/python-pip_26.2.1_all.deb
-Size: 1190104
-MD5sum: 96035ce517a4f910fbe9a75f3b3c4f7b
-SHA1: dcb55615d5abbfae214a36098922a26793d7fb4c
-SHA256: e7d52476efaf2c7b9b49c05f2abcaa2f65254200b039232d8508399abc2a1c99
-SHA512: 28f3fcf62ca06c4223abd25ef11a3ee53ff4457094033aa7e32c7cec669f155d365b7cc212f78334ec4c765d9c5c9be315ccce123f3f13f134542f32c0a32054
+Size: 1190144
+MD5sum: 9c5ee7103d0f7a0462ed72d420be37b5
+SHA1: 2dde3e38b2931cda635268c4e7f5d8b59b066ca5
+SHA256: 9622e97b4d69221bb5386436a06948ba987038d02c8dee4fc94ca300690dca27
+SHA512: a2c12724a753c0d7069aeb0cf67579a6c2039405f263b6136b5f910c09ae6d484e8b53f0aeed75a552235d63d01c24f6a3d28da0cdf27ad784110673a9521daf
 Description: The PyPA recommended tool for installing Python packages
 Homepage: https://pip.pypa.io/
 
@@ -160,11 +160,11 @@ Depends: xcb-proto (= 1.17.0-3)
 Recommends: python
 Breaks: xcb-proto (<< 1.15.2)
 Filename: pool/main/p/python-xcbgen/python-xcbgen_1.17.0-3_all.deb
-Size: 15192
-MD5sum: 63f0f7d6d5eca913cbd4f3a6a8276b4d
-SHA1: 100a375d7ba6c4ed4703ddbdb3190df3a7cec7b4
-SHA256: 5911b56ee15cd64ac8e60e60da42ca175c473db93f54813b57c2e475c8766935
-SHA512: 713484c06f48d6c2757972bf91080a27f6a4d1490d2ff4c155202087746461a52df923b003263fdb5eb944e0df8c05b08752dc84ff044a6c8a29a6fc0f2f7f12
+Size: 15188
+MD5sum: d886a5ca6c9975d1e015b1775aba91de
+SHA1: e0f2504f683513c371402fddd395536de0068174
+SHA256: 02797c8842922ed321d696a9cc0d3bba1c658f69809d193bc47f36b047b70977
+SHA512: dc53e9fbf4759f7bf4f4356501d5112749993046471ebc2a3f196a9e28a193fb07990659c361ed274df5eba99b0f3e6a7a7fa62e59dd098d1201a0dff54b8b8f
 Description: The xcbgen Python module
 Homepage: https://xcb.freedesktop.org/
 
@@ -175,11 +175,11 @@ Architecture: all
 Version: 3.4.1-2
 Depends: ruby (= 3.4.1-2)
 Filename: pool/main/r/ruby-ri/ruby-ri_3.4.1-2_all.deb
-Size: 1859728
-MD5sum: a772d13084053059e0ad73d0709f594d
-SHA1: bea2a38829e0d6bf4ff727487565b4d756012e35
-SHA256: 492cdcac887896548b4344eccb1d73296a77b691d7afbb15a533d355c48fc224
-SHA512: 939130bf7302d326e07d16ce68ea435c0ef7cff2336767703bae0274ff77bb9a7fea0e6a7de10779111ffa8293f81739187cfb7170b567287aef8b3e58ff579b
+Size: 1859792
+MD5sum: 29beea1e1abfa18aec930700ff2824fe
+SHA1: e1f573ae6ed8f08ca9ba40c364bd4dd2defec02a
+SHA256: 01621e058e52cf0399a1c3757a7d8483b4591276948d065776b31b3130718681
+SHA512: 520efee41e6fdab1a39e779a4f41922378f30f23aa66666d7a30f261fdf854fa2b0ff266f8a1db86b43ed6f5cd6c053951990a151c9592df643e884abca017e0
 Description: Ruby documentation index
 Homepage: https://www.ruby-lang.org/
 
@@ -190,11 +190,11 @@ Architecture: all
 Version: 0.8.0-2
 Conflicts: termux-tools (<< 0.51)
 Filename: pool/main/t/termux-am/termux-am_0.8.0-2_all.deb
-Size: 577508
-MD5sum: dbad2a53d6e534b95b5f9cec200bc780
-SHA1: b35b241f1b9dae43e1f779d937d41f638746f698
-SHA256: f408a510b44b973097ec959d75a54aedaa2eedf6391bbfeacf540d7065ef446c
-SHA512: 14f8caf04c9893ef9c57b075ecc40bb6358d6ff6490b2418e49ffdb81203d8e34e33eda4ccd7afa63661e66170d7213f10fb8e0cb30d31f9ff66462f42b88c79
+Size: 577504
+MD5sum: 2c76d7a7ceb153f84e5144175d24b7ce
+SHA1: 95d12ee0126407ff8e2042a4c2c47006dee2d17d
+SHA256: 8a10a1ff90b1624b7c6ec6aefb9660a818bb89206be6872ac747067542405d5e
+SHA512: d2977e215eb198c32cbebc743a18aaf9d40683c60bc5ae782814dcb5d66e8dbe66465f01ace21d92436b959f369660c88e5fabfe83026be3697491deaa8f4210
 Description: Android Oreo-compatible am command reimplementation
 Homepage: https://github.com/termux/TermuxAm
 
@@ -207,10 +207,10 @@ Depends: tree-sitter-c, tree-sitter-lua, tree-sitter-markdown, tree-sitter-query
 Recommends: tree-sitter-bash, tree-sitter-css, tree-sitter-go, tree-sitter-html, tree-sitter-latex, tree-sitter-java, tree-sitter-javascript, tree-sitter-json, tree-sitter-python, tree-sitter-regex, tree-sitter-rust, tree-sitter-sql, tree-sitter-toml, tree-sitter-xml, tree-sitter-yaml
 Filename: pool/main/t/tree-sitter-parsers/tree-sitter-parsers_0.26_all.deb
 Size: 840
-MD5sum: f150d7a16615c3eda221a3f4c324f1cc
-SHA1: 939f426847f9c57c1e2c7530377bda9772b129e7
-SHA256: 85e91d473ce5f4968b5fd903ea2d7ea369cbd8c5f2660c9b92b70380f0b43e72
-SHA512: 736b027cca33bae19c4f1893e540f9c2ec83bd64e9c9029b1ba01090b2ab0666e715850855320b300eeb36723aa4be156ede0e9fe294a68afa4c1bfb9a1af8f6
+MD5sum: 84acfea67c26e59d26173ea78b622e06
+SHA1: 953c633e5abef3c67e156b5de7273e86390df879
+SHA256: 74e85e75efe34a6b2ec9c956b0782427aa544883c38becbb8176e55bed9c8b77
+SHA512: 3131825c4d1d32a3febc0959f036712b9e4ca4cc198d090e5594014bb1c1882bff2aba2e197f4455f779c6d248e7a6bfa7a9aee8842a290a3b9a85acc2cf787b
 Description: A metapackage that provides commonly used treesitter parsers
 Homepage: https://github.com/termux/termux-packages
 
@@ -220,11 +220,11 @@ Maintainer: @termux
 Architecture: all
 Version: 2.37-8
 Filename: pool/main/t/ttf-dejavu/ttf-dejavu_2.37-8_all.deb
-Size: 2460044
-MD5sum: 0f1a57b7470319901b2a0773be97df9a
-SHA1: d728baa8d6f396e95520acee16b5b60aaf8f5d6e
-SHA256: 5c821acd6749a204162d69b175028e7d1c8d1c8d72ed81d4895b7fd1900c8839
-SHA512: f5e4040cad392a3cb5d3a579e788517f4080a5ab08c1558eb084ced35d1292c35bc130e3430d3643e64da6b9f5e0e6ddc28d7d5de92fc709b7dbfcac6f08eeca
+Size: 2460224
+MD5sum: f3359175769e30aa40f5e2c6cee1d695
+SHA1: 876d78b5ad843df76e10d0f5a0472d077b8bc9f3
+SHA256: 57735fab7870d1853a92decc0dada890cbbe3be9f4a957278427b97240e229fe
+SHA512: aaa7d570316c87761b352f100f489c6e90209ef125b26753a80ffc949dd410e9c45869501e9dfe80037fcd3f88422661cd1f3bd99fa99705444df8297f1aed02
 Description: Font family based on the Bitstream Vera Fonts with a wider range of characters
 Homepage: https://dejavu-fonts.github.io/
 
@@ -251,11 +251,11 @@ Version: 1.17.0-3
 Replaces: xcbproto
 Conflicts: xcbproto
 Filename: pool/main/x/xcb-proto/xcb-proto_1.17.0-3_all.deb
-Size: 78640
-MD5sum: 1fdefeef3ff62bcd3fc07c78138262d9
-SHA1: e024329be03fac2251e7d30872f1b7d072f245ff
-SHA256: 6add5f5f7e8345b227a74c2a66397f3c5e909d4324e2c95ebcc5c189d96860bf
-SHA512: d30c5e6ebd873ed5bddd31be6d486c09c2f7c782b19f8b06c20ff764f833fe4fbcd08e9ba6c593efc607eabcc78a53b9eb462826d0c29da31bcaa02538afbc2f
+Size: 78656
+MD5sum: 292bfe02bff26de032864faff3892ba3
+SHA1: 3cf8f3066246070a6f21a4afa27db185b4a59b44
+SHA256: 643382fbb07db90f08660becac763af0fc455a4afe6bb76b89b6ff24572f4fca
+SHA512: a6d624fa56b81c523a8c010701182800d86ae7612c063e205b086a675141bef1373ad355ca0f5bcc853c12398f23a39b9bf3ed72b386754db9b052e190464000
 Description: XML-XCB protocol descriptions
 Homepage: https://xcb.freedesktop.org/
 
@@ -266,10 +266,10 @@ Architecture: all
 Version: 1.20.2
 Filename: pool/main/x/xorg-util-macros/xorg-util-macros_1.20.2_all.deb
 Size: 21972
-MD5sum: 0d25778b1782f73c4398c6175d9c0e3b
-SHA1: 978753746d18ecde229c3593a6d26e57ff44a398
-SHA256: d8a3f82fdd47ccec2821c5782e24450ea04edbf9b3c7896db7577dd1056003a2
-SHA512: 0faff31acf902c9e2ec9e08fd730405d562a5f2d9f1e57f665194c499b77fd9e0b7029cb599652bb67de9b65dd5836cdb874bcf660c586d72667de55eebe4f7b
+MD5sum: fb5dac62144ad3f94a8eea420e58a088
+SHA1: 79623d1928072f6ed9904d5a4039fccc29f2b1f5
+SHA256: 3b954e07a030ace52306832b5cb42276302e105de45364d5e12ffe0ea2c595cf
+SHA512: 57373bc065f3c99eaf641f03da0ad0bf0775951f0bc8446e0b844da1efec3517e46a8e1e725e3f020ae4a5e0a727ca14715c73fe9aa95aad3c12eaa957d357a1
 Description: X.Org Autotools macros
 Homepage: https://xorg.freedesktop.org/
 
@@ -282,11 +282,11 @@ Replaces: x11-proto
 Depends: xorg-util-macros
 Conflicts: x11-proto
 Filename: pool/main/x/xorgproto/xorgproto_2025.1_all.deb
-Size: 249700
-MD5sum: 3c3249e702917f6d35a648b8b3776dea
-SHA1: 255c25432f5e70d97194f586bd3fa44adcb643dd
-SHA256: fa8a4d5180a9b73063040102ebb4aa8c651ffbe51f20d253bd411c6bdef4174a
-SHA512: 4706bb0557d5096c758924de70666cf5cfc23ffea9cd866a642d521b90bdfb171608f8a7e75d403190fc8539c3ce4ff0ce71d3c92b916df178ee660a978dded8
+Size: 249740
+MD5sum: 6be3151ef51ce49284309b376c692556
+SHA1: 66675144a1599d9fb202c5abd31a646d36476c0c
+SHA256: efbe6ab881a4a320db08f88e43e35621e54f84f9826cc514b8e90c8f418eb3b3
+SHA512: aca78357386576a8c30ea3b56215a3a3210ac5799347c29eca72acb1dd7291b9be415ac082ffd40e7325c71b7734e34f12e9410e1ed54371f508dc9cd261db07
 Description: X.Org X11 Protocol headers
 Homepage: https://xorg.freedesktop.org/
 
@@ -296,11 +296,11 @@ Maintainer: @termux
 Architecture: all
 Version: 1.6.0
 Filename: pool/main/x/xtrans/xtrans_1.6.0_all.deb
-Size: 39904
-MD5sum: 274c9356267345e6c6e98b65fabf82d4
-SHA1: 084dee74e184d30ed5fad563a58f204c3ae6d065
-SHA256: 6e2f85c7cff37ea3ca16f79a8e44fc52587e7719642e2ea11325bb9214c1047a
-SHA512: 3e2e5109d84320d30feb5a8aa4d6f063082b7f0d0af8e8d67cacda3761c72211d087b73b0bd83cc196c13e0033decd3bddae780fa3959cfa6ffbb3a948e0c44f
+Size: 39908
+MD5sum: 01c1630d71cb8babe1f2e917e523a1cf
+SHA1: b9e433c3a49ac5f71cc4b967c7d43ab96b00d4d1
+SHA256: 2aca5a444cac2f983bb00e565510cff2ec754ef0346b7691dd4cb3a824d94a50
+SHA512: 8506517ee49869643ce0ace90f13c8f48075264367c35688cc8dc4341195e041d121f15986e072e02e0c1b05cb94001b45a35dbc0871988549f438df53aaff6c
 Description: X transport library
 Homepage: https://xorg.freedesktop.org/
 
