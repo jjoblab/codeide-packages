@@ -268,7 +268,7 @@ Description: Tools for working with bzip2 compression
 Homepage: http://www.bzip.org/
 
 Package: c-ares
-Installed-Size: 1104
+Installed-Size: 1108
 Maintainer: @termux
 Architecture: aarch64
 Version: 1.34.8
@@ -277,10 +277,10 @@ Depends: resolv-conf
 Breaks: c-ares-dev
 Filename: pool/main/c/c-ares/c-ares_1.34.8_aarch64.deb
 Size: 194924
-MD5sum: 65bde96f783f74cf75ea2a44cfac4922
-SHA1: fad4ac164aa17c739a6329267dd6da32bc2bc7f3
-SHA256: 26aea24777cb247598f72bfd6a9cbb97265d0b95c36bae6dc13647b0e55c5a0a
-SHA512: a14cf05666cf1de1af53d3b26580f1eb80128788529c4dc2edb639535f17620b300749d7d8ce2afe2b9054ac4b472f693d7a0793ddcf3551462c569708be1fb6
+MD5sum: 77445a4b98baac626577481efad3cf43
+SHA1: 8df66e14ff0d142625a3ed9810b2f4e8ba264ac6
+SHA256: 328a485716750ff4b05d106f20849bb4f389a4fd0c2b135e24253cb0d848f327
+SHA512: b0d8ebffeb0844a9aa984c578651be2a24f289d1b004dd8f90c70e4eb101b529c507934b2ab1ace373c2400e2796044621312c043f6d20e5b8de42c5fbfbc778
 Description: Library for asynchronous DNS requests (including name resolves)
 Homepage: https://c-ares.org/
 
@@ -305,11 +305,11 @@ Architecture: all
 Version: 1:2026.07.16
 Depends: ca-certificates (= 1:2026.07.16)
 Filename: pool/main/c/ca-certificates-java/ca-certificates-java_1_2026.07.16_all.deb
-Size: 95140
-MD5sum: c00a1cc9a5d2fb53db10418c3f81fef4
-SHA1: 261ca8a5074b3fa221fac6fe64bbe49aa9a0f49a
-SHA256: 7125f1dd92fa15777a908072101ef8e25f32a96806c625ef8e0662816e2b4b85
-SHA512: 9e7cff2094e225c190f051603af54bcaa34a2f0f99b77d88119514be519cc89492b299badab5d33ef396826b90cb2cb01e04dbf0f7c7cfff9c494dccb65be102
+Size: 95176
+MD5sum: 13bae45d710d8e8e69583c4f7f7dc1cb
+SHA1: c1f6ad72efaa85889c4fa56ab8bb3f18bc12b395
+SHA256: 81a335d893a4c9f0035e0b3843f1e09d85704e731dda72c585e14391153f6ec9
+SHA512: 9c51f51e8ee91dec163ed5fa30e5c822ee138b2e04ab5dbadb7b6232cfbe3ea6a58079573959debdb99cf7172a7e9f6b6e757e58eb696edbefb0f02c2bf569fd
 Description: Common CA certificates (java keystore format)
 Homepage: https://curl.se/docs/caextract.html
 
@@ -344,7 +344,7 @@ Description: Static libraries for check
 Homepage: https://libcheck.github.io/check
 
 Package: cmake
-Installed-Size: 55840
+Installed-Size: 55832
 Maintainer: @termux
 Architecture: aarch64
 Version: 4.4.2
@@ -352,10 +352,10 @@ Depends: libarchive, libc++, libcurl, libexpat, jsoncpp, libuv, rhash, zlib
 Recommends: clang, make
 Filename: pool/main/c/cmake/cmake_4.4.2_aarch64.deb
 Size: 10631860
-MD5sum: fcad83b41db91ae3988ed052db33ac50
-SHA1: 97807e370ce2202c8b77124451a073bcb57a5976
-SHA256: 0a4adb90911b3f9f1f1cc135cba50f034dc22e2f6252b0fbfc66b02fef720544
-SHA512: 7fe187c819d6f7eb3eb41480f6deb72e679cbd7d631d9224505b5f67889a71743b0699b8725881e431e4e2069aa322c24cf22904dddc05e01b1c95f759a1f710
+MD5sum: c1a597570adde18f305b0d299b6d0d63
+SHA1: d40ecaa57c1f1d77213f08140b7291cf647c78f9
+SHA256: e455ba4ccb89ab1cd4872621404feb67078dfbb6f8f09254fab64c8d8e8b7fe9
+SHA512: 1218ab1f4da52402b9482bc4aa7d61372915ce8f8f8a825cd79dcf6d48cdbc0a63ee79dc2cf58baeb064301e34de4ba5e0c0fc618638c0a9334b0dcd1d2db8d3
 Description: Family of tools designed to build, test and package software
 Homepage: https://cmake.org/
 
@@ -2756,7 +2756,7 @@ Description: tcl bindings for SQLite
 Homepage: https://www.sqlite.org
 
 Package: libssh2
-Installed-Size: 1152
+Installed-Size: 1156
 Maintainer: @termux
 Architecture: aarch64
 Version: 1.11.1-2
@@ -2765,10 +2765,10 @@ Depends: openssl, zlib
 Breaks: libssh2-dev
 Filename: pool/main/libs/libssh2/libssh2_1.11.1-2_aarch64.deb
 Size: 219324
-MD5sum: c06f93aef65fa69e35ab6e39b78f0c23
-SHA1: 271ede10ed673a4d2ee789d829e3e018e3e10aab
-SHA256: a81ed8eab0a1bd774352912b43f49640925a09d33d22b112bb25fb61ce869f31
-SHA512: ea15592a4144b4390ddd8b8aad57cb215c5d40fa8b8a20d8a55b966c39e6f9cc6d7234d5a46ec6acd1ebdcf177273b7a95dc67177984345863ae64ae4817391f
+MD5sum: 42c0668f55d8751eab3ae8e7ed8745e4
+SHA1: 4cdd8fb1f780627cf6ed8771eaac66b6db8390b6
+SHA256: 4549057886f9490e2e0f7f3988a1a9e27539be26eb136e0bfd8d5cc06b1b14a9
+SHA512: 10dfc655c1d2995b6cfda364377b6e30bf79d94b5531eb9335786ead96ff24e14dc92607f03bccf08cb0f03f7218137d134f8cc8c6145a4c29a434cc5d863d8a
 Description: Client-side library implementing the SSH2 protocol
 Homepage: https://www.libssh2.org
 
@@ -3132,7 +3132,7 @@ Description: A library containing the AudioProcessing module from the WebRTC pro
 Homepage: https://www.freedesktop.org/software/pulseaudio/webrtc-audio-processing/
 
 Package: libx11
-Installed-Size: 13708
+Installed-Size: 13700
 Maintainer: @termux
 Architecture: aarch64
 Version: 1.8.13-1
@@ -3140,10 +3140,10 @@ Depends: libandroid-support, libxcb, xorgproto
 Recommends: xorg-xauth
 Filename: pool/main/libx/libx11/libx11_1.8.13-1_aarch64.deb
 Size: 1910504
-MD5sum: 66498ef2e00837311250996ed53fd4ad
-SHA1: c1a6c520f3d82e5bb9d80c030b6c969e2ed2f5ee
-SHA256: a84eb386e49b0aca5260f8cc0a6b71eaa4ad259b92350ab3c012ce9c9d2b6c73
-SHA512: 9760e3768240ac6e2898b59a9f02232caf28ae32e03c5c458d189347851fc4f2e54d07d0ea5f43e51dcc733c472d268d0bfa23f860383de60603980b8c08d39c
+MD5sum: 9a0fcc7e011e84131dc89e0fddfec068
+SHA1: 667d8177082b070aeaba8321428342f33289b694
+SHA256: 35589d8535ab45f0f1bc7c2eb4628b3e8b3d92fc50bbd87aed7b63c4f2578512
+SHA512: 0ba407a50a93cae9c0f8053fccf70b0d8521fe12018d50a16f4fc0787c88dc82b9f205dbd6b7e2c8410722d69f24afd7d02e442ca178187da316642dd191ffe7
 Description: X11 client-side library
 Homepage: https://xorg.freedesktop.org/
 
@@ -3177,7 +3177,7 @@ Description: X11 authorisation library
 Homepage: https://xorg.freedesktop.org/
 
 Package: libxcb
-Installed-Size: 12780
+Installed-Size: 12776
 Maintainer: @termux
 Architecture: aarch64
 Version: 1.17.0-1
@@ -3185,10 +3185,10 @@ Depends: libxau, libxdmcp
 Recommends: xorg-xauth
 Filename: pool/main/libx/libxcb/libxcb_1.17.0-1_aarch64.deb
 Size: 915524
-MD5sum: 25089501c9c8d7319aa06829fffb0f42
-SHA1: d0d9b82a69e049fd6acd576ca91e633c4f067aa3
-SHA256: c366060801a54b5a339baee2381dc0d41e0e4f6895c687d8c6364fabb491dca5
-SHA512: 343fbe8f048292e9ae3c686a9efde3bf01b2eb24b2b10800df0a2093d1ebe1883c7034ac2ac7f4927389b84eaa0f02192618b9eadb327fc8602511dc07121c86
+MD5sum: 10e19fbae0a556c74c97b57c70b96f92
+SHA1: bfa743712e9ffd1eac529e780f62dacffca0c183
+SHA256: cb46065d1c1aedbce6d7f7493d14a8c328ae9126a5e8a7ebd87425191c35f2db
+SHA512: 9d1dec2b3756765c2ecbb9832c15a92d840f1e09339ea46b3d4c573ecd72df597a72616ca57ded178d2812ac07b9eac98ab52a2124816f9f6f6e0ec692324e71
 Description: X11 client-side library
 Homepage: https://xcb.freedesktop.org/
 
@@ -4022,11 +4022,11 @@ Architecture: aarch64
 Version: 6.6.20260307+really6.5.20250830
 Depends: ncurses (= 6.6.20260307+really6.5.20250830)
 Filename: pool/main/n/ncurses-static/ncurses-static_6.6.20260307+really6.5.20250830_aarch64.deb
-Size: 154188
-MD5sum: 171f7a25e6ff9ac92b29facefc57544a
-SHA1: 5be30f846195f453022e8832774f3e0da4d7b230
-SHA256: 83690a06fdfef78c66e8483b1b2a06c3b9cbe0c860675b75df10a051654601a3
-SHA512: e4a0139ede80df2bdd344ff32f42931f4f2f96c08d8c6619f986d4b2816128d5eeb47b6e050f125397bf93ed7d8496d92e8bf4e9ffe5a6a66172b497ef1ba1ab
+Size: 154292
+MD5sum: 244540fd7e720df1ef26076929154448
+SHA1: 00f3e61685ad406cdaeab6c73050df5393a7dc67
+SHA256: 9bd0b9ea31ba4b7ab6033a0cc77650c3b9e17fc5c3f7ce4bbc57ece4d25b416d
+SHA512: a9029e98d0695d906be9ad736242417805abb861ad087aedaf860849954745f27b808006e260b02d6effea88acbdffa52c01241234c7a4a21e7299862ae02f40
 Description: Static libraries for ncurses
 Homepage: https://invisible-island.net/ncurses/
 
@@ -4054,11 +4054,11 @@ Architecture: aarch64
 Version: 6.6.20260307+really6.5.20250830
 Depends: ncurses-ui-libs, ncurses (= 6.6.20260307+really6.5.20250830)
 Filename: pool/main/n/ncurses-ui-libs-static/ncurses-ui-libs-static_6.6.20260307+really6.5.20250830_aarch64.deb
-Size: 39528
-MD5sum: 06494ec270407625b0fe111f992f5b32
-SHA1: 99a16df398a7144ac7bd515259235b12d8a48d8a
-SHA256: 47c1fdb4095fb068824157b8c9d2a9630af8dd6b4d3ae0f05df1e8d2e0eec90e
-SHA512: 83e15d09a85758b9f23f45fdd29eebbdae53d0de2ffc36ee7520e8ca5cb0c7bb321d4d8578dafbb912870b8f09d2450392f69685ca9aae0cb0b647e91e4666f0
+Size: 39548
+MD5sum: 782e5b002fa597f2083d46af68ec4360
+SHA1: 1a85590a1657e8324535d4d36b9de741f44c9666
+SHA256: 4896010b34bacc112bb38afc5eac7aad241ad3dc737f40b9e3736c5c7c63f720
+SHA512: 58deaf8dc4e62b5597827344149f645e3b6af00b6809184d474d3220ff4e3072812628178a19292bfdf313d5fba43ea84a9e500b21e26bbbc6d1474356ac0aab
 Description: Static libraries for terminal user interfaces based on ncurses
 Homepage: https://invisible-island.net/ncurses/
 
@@ -4078,7 +4078,7 @@ Description: Tools for working with terminals
 Homepage: https://invisible-island.net/ncurses/
 
 Package: neovim
-Installed-Size: 32424
+Installed-Size: 32428
 Maintainer: Joshua Kahn <tom@termux.dev>
 Architecture: aarch64
 Version: 0.12.4
@@ -4086,11 +4086,11 @@ Depends: libandroid-support, libiconv, libmsgpack, libunibilium, libuv, libvterm
 Conflicts: neovim-nightly
 Breaks: neovim-nightly
 Filename: pool/main/n/neovim/neovim_0.12.4_aarch64.deb
-Size: 5944392
-MD5sum: 6fe42c3a21b650f2aded21dbc27ba660
-SHA1: 8a20ff1731bfb44fa45e43eafdebbc303eb1811a
-SHA256: 1a3dd56b8a8bb1d1fe6e989bb87903a16af10a3e8c6d73ef73fed64a6e850000
-SHA512: b65676e868331eac1d97399fb3f6b8375a7355fcc1833ace460c138d58b0af939fd699ba85b4204de6e78025249ad8c87c6ad12194d99088459ae1b0b1abc63d
+Size: 5944468
+MD5sum: cdb2e7c704f8a36202a8fc1dd5613297
+SHA1: ea7fbe5c2cd7fb3e6002978eb7d50452d7ea68a2
+SHA256: e60c8b86f09bf0f2b57dacef02e64a5f9b09b6785ebb5c651122870d46ef1110
+SHA512: 8a0a4290a9e7a0b3d799e3fdc731635f0e9a8138c4519aec10f44065dc52917eebdc4c54527c3cc61ffaced8b0791a4ef7a8d57abef71641d48f1b6f5ef540c7
 Description: Ambitious Vim-fork focused on extensibility and agility (nvim)
 Homepage: https://neovim.io/
 
@@ -4188,7 +4188,7 @@ Description: Static libraries for oniguruma
 Homepage: https://github.com/kkos/oniguruma
 
 Package: openjdk-17
-Installed-Size: 218036
+Installed-Size: 218040
 Maintainer: @termux
 Architecture: aarch64
 Version: 17.0.20
@@ -4196,11 +4196,11 @@ Depends: libandroid-shmem, libandroid-spawn, libiconv, libjpeg-turbo, zlib, litt
 Recommends: ca-certificates-java, openjdk-17-x, resolv-conf
 Suggests: cups
 Filename: pool/main/o/openjdk-17/openjdk-17_17.0.20_aarch64.deb
-Size: 96303492
-MD5sum: 49b31ae8b6e4d8a552ef13eb50ec14b7
-SHA1: 38ffb5ef28818dde9ab43b7ee14d723a1b04839f
-SHA256: 63148df768bde47e6c9bf10547229e252771c75a4125279c30d8748549729993
-SHA512: 0dd5f0c1c05bfd937ab7e77822839bb7e268732d1e2feda66983394fdf5e003ca68afba2fab4866ff8dcc61430647f895b7266bd6c19d3e973c58698430c0457
+Size: 96296012
+MD5sum: e435296b8a7eeec0d882bc188d2a77b6
+SHA1: a1b4cfa362cfde5f565cb12439f4b7d7f0421cb9
+SHA256: ee174b1e1f605da2e7fed99ad093e7231e61ac37c90e1952e0e4669d0a57f557
+SHA512: 32c22d1229970787cc562d3a03ce0e4544cc5171395d0425659528f2f70dab6919f49bd75be56bc1e7f4161df11a1bd7b3eafb69f233a1fa7c95c60fd6cdf1fc
 Description: Java development kit and runtime
 Homepage: https://openjdk.java.net
 
@@ -4210,11 +4210,11 @@ Maintainer: @termux
 Architecture: all
 Version: 17.0.20
 Filename: pool/main/o/openjdk-17-source/openjdk-17-source_17.0.20_all.deb
-Size: 47124156
-MD5sum: 0daaa77beba48d650e9f5308f2838c9b
-SHA1: 87b4a520f1716a23cbf411ecc9518bcb651b27f1
-SHA256: 5f3b95ebcaf83ba957d0c04cbf72c0e0322b8ef159fd75b3a8321ac40b6488b9
-SHA512: a9f2d38baa0539e33b8127d3c9fa50f6908871f985ee069d59be8f52745a8b7cfa1b25956f90a1be1efc50d43d1745de7f5f2316f1873cbf72afd88d210fdfd3
+Size: 47101752
+MD5sum: 33262d0fa430ff60eb7f0073c073d300
+SHA1: f67c892caab6f6bd8dba1b49a8b472080c670c7d
+SHA256: 6e3ef10a1c8b5781ca091bb32db88cf4c5f51e7f1799c682aaef9a0bc4de53e7
+SHA512: 579bd4470cc9f3650b15ba3c296f92d5f575d797c25b37e5cd846068c5642a43632026962c2a8ba818858747f7abe84b961daa805356d7ad7f808f38d89c664f
 Description: Source files for openjdk-17
 Homepage: https://openjdk.java.net
 
@@ -4225,11 +4225,11 @@ Architecture: aarch64
 Version: 17.0.20
 Depends: freetype, giflib, libandroid-shmem, libjpeg-turbo, libpng, libx11, libxext, libxi, libxrender, libxtst, openjdk-17 (= 17.0.20)
 Filename: pool/main/o/openjdk-17-x/openjdk-17-x_17.0.20_aarch64.deb
-Size: 12666348
-MD5sum: 84e2d930fe9d292eab78ff53248af11e
-SHA1: 57f3ca8264f371b8b7f68f87d3246e83b837e418
-SHA256: d11b35f1af5df67e01fc3073858f717f516f32c4d2e43390ef968ad462949e1f
-SHA512: eb9835be5d6b8fc7b3da7ba3dce58bb63407f3c2323c9781fadedc1c4ff7e1ff598fa37c880d4d9d2f5550a9c467c62894bc97c02a624aabdd23b248b079cba8
+Size: 12665672
+MD5sum: 723e5783a0baad788fe9767b9654b0a6
+SHA1: 51d0e6b299aec247812a421f609e112cf3b8576b
+SHA256: 3ab6310ae6cff0faf71f70bfe5e7a6ecdfda6a6698877c892164d1bf437cc031
+SHA512: cd14247c040086a98ff234064790fb7e867478e35892b73b93557605c93df55826797e69e2c55947b7d7971e8586fa824b087342a7af0f2a5d5d122c7b935212
 Description: Portion of openjdk-17 requiring X11 functionality
 Homepage: https://openjdk.java.net
 
@@ -4391,17 +4391,17 @@ Description: A grep with Perl-compatible regular expressions
 Homepage: https://pcre2project.github.io/pcre2/
 
 Package: perl
-Installed-Size: 69312
+Installed-Size: 69308
 Maintainer: @termux
 Architecture: aarch64
 Version: 5.42.2
 Depends: libandroid-utimes
 Filename: pool/main/p/perl/perl_5.42.2_aarch64.deb
 Size: 15434168
-MD5sum: b18bd67a8f820ff5608bd35602ee59aa
-SHA1: f4080ef0f0919da5a4105916b943bfc9d9aa436b
-SHA256: 7880223237b852193e70bf0bc5aae5e02752aee6ed8a6ad72324254a4134d3ce
-SHA512: a37d01d22708e4258b0098c6206a80320530efa711d9ffbe95fe029588061e3f116d177406b09a4e85f7c941d2dd89cb5ae044d94aad4c0daf160bdba28a98d5
+MD5sum: 694d9ef2757fc29bf0b2f18f316bf29d
+SHA1: de04cd231c63ae55fe3b3b9032d4853b14a0eab8
+SHA256: 12e308e10beaad15711db903d8d494b3a0894fbe39448b15db2b214a0b72ab45
+SHA512: b2f917e08cde5645ea4aff67ecaff9476e3bdc3a375dc4f089994df1768d906e5576a35ec8d7cc24e848e132062b09925307b60d939e9745356e6276f76bf66e
 Description: Capable, feature-rich programming language
 Homepage: https://www.perl.org/
 
@@ -4966,7 +4966,7 @@ Description: GNU tar for manipulating tar archives
 Homepage: https://www.gnu.org/software/tar/
 
 Package: tcl
-Installed-Size: 7736
+Installed-Size: 7732
 Maintainer: @termux
 Architecture: aarch64
 Version: 8.6.16
@@ -4975,10 +4975,10 @@ Depends: zlib
 Breaks: tcl-dev, tcl-static
 Filename: pool/main/t/tcl/tcl_8.6.16_aarch64.deb
 Size: 2261872
-MD5sum: 65ca20973ae021ab3499f0dbddd59922
-SHA1: ef91b3579932bc8fe2a3b57e2e4e3450cd7282b6
-SHA256: d3cae7f0ef322fafba5978bdcf8ecc7030da4f390be338fc65081a9008b2a1a0
-SHA512: b21106b2b3e7aab5118d7801fa0e81945298076e816287f058d3072c004be4f6bd347bd27ac3603b710a4069561653846bb1b7167543caba978330248869e27a
+MD5sum: b9f5b082649cb74c4b045b77387adce1
+SHA1: cf6cb70a7586f34abf5164941fd99816adb1f4e5
+SHA256: 9d0311628f0f6450eeef7f363ce1664929c757d46833234232eecfcc37291c05
+SHA512: 7409fb610598db980e6f7a0328801f4f775e5d0c572808cd8d9e7a8ba13e2c7083a72648d62b7833fde331ccaba529ec03a9e24c8e2d5c9bec382485747f8712
 Description: Powerful but easy to learn dynamic programming language
 Homepage: https://www.tcl.tk/
 
@@ -5101,11 +5101,11 @@ Suggests: termux-api
 Conflicts: procps (<< 3.3.15-2)
 Breaks: termux-keyring (<< 1.9)
 Filename: pool/main/t/termux-tools/termux-tools_1.46.0+really1.45.0-1_aarch64.deb
-Size: 30396
-MD5sum: c253b8180436eb8b4be6f83f184ac6bc
-SHA1: 8e36450c1e622129cff96ae747545b512e6d2ea8
-SHA256: f40fc1cf018fba4884011588734d174a724ee31453c045eccf7980c8be58a752
-SHA512: f74980bab1bed551f844b30e738dec98c077d0ab105563462975d33cae2f3d630a51aec479215f13587a53e031a2f1e5b5e890ebbda92a6d7c74b345f595d07e
+Size: 30404
+MD5sum: 83787d0381d110e339d21359190812cc
+SHA1: b55482cb62e801b67e065554e31507dd27c7b4ca
+SHA256: 0f5d5fed430725371d67dd5d06005385dc5a029803432380efb05ea6e1e15043
+SHA512: 170277502deec9b5ee79590a19a3c809d199da5bb6c30420a0f3269164f0149da9ef9715c7c7b51ea3377b2b3c1cca8124b137de620782cf9a7d61117e0e5084
 Description: Basic system tools for Termux
 Homepage: https://termux.dev/
 

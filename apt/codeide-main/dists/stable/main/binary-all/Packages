@@ -64,11 +64,11 @@ Architecture: all
 Version: 1:2026.07.16
 Depends: ca-certificates (= 1:2026.07.16)
 Filename: pool/main/c/ca-certificates-java/ca-certificates-java_1_2026.07.16_all.deb
-Size: 95140
-MD5sum: c00a1cc9a5d2fb53db10418c3f81fef4
-SHA1: 261ca8a5074b3fa221fac6fe64bbe49aa9a0f49a
-SHA256: 7125f1dd92fa15777a908072101ef8e25f32a96806c625ef8e0662816e2b4b85
-SHA512: 9e7cff2094e225c190f051603af54bcaa34a2f0f99b77d88119514be519cc89492b299badab5d33ef396826b90cb2cb01e04dbf0f7c7cfff9c494dccb65be102
+Size: 95176
+MD5sum: 13bae45d710d8e8e69583c4f7f7dc1cb
+SHA1: c1f6ad72efaa85889c4fa56ab8bb3f18bc12b395
+SHA256: 81a335d893a4c9f0035e0b3843f1e09d85704e731dda72c585e14391153f6ec9
+SHA512: 9c51f51e8ee91dec163ed5fa30e5c822ee138b2e04ab5dbadb7b6232cfbe3ea6a58079573959debdb99cf7172a7e9f6b6e757e58eb696edbefb0f02c2bf569fd
 Description: Common CA certificates (java keystore format)
 Homepage: https://curl.se/docs/caextract.html
 
@@ -108,11 +108,11 @@ Maintainer: @termux
 Architecture: all
 Version: 17.0.20
 Filename: pool/main/o/openjdk-17-source/openjdk-17-source_17.0.20_all.deb
-Size: 47124156
-MD5sum: 0daaa77beba48d650e9f5308f2838c9b
-SHA1: 87b4a520f1716a23cbf411ecc9518bcb651b27f1
-SHA256: 5f3b95ebcaf83ba957d0c04cbf72c0e0322b8ef159fd75b3a8321ac40b6488b9
-SHA512: a9f2d38baa0539e33b8127d3c9fa50f6908871f985ee069d59be8f52745a8b7cfa1b25956f90a1be1efc50d43d1745de7f5f2316f1873cbf72afd88d210fdfd3
+Size: 47101752
+MD5sum: 33262d0fa430ff60eb7f0073c073d300
+SHA1: f67c892caab6f6bd8dba1b49a8b472080c670c7d
+SHA256: 6e3ef10a1c8b5781ca091bb32db88cf4c5f51e7f1799c682aaef9a0bc4de53e7
+SHA512: 579bd4470cc9f3650b15ba3c296f92d5f575d797c25b37e5cd846068c5642a43632026962c2a8ba818858747f7abe84b961daa805356d7ad7f808f38d89c664f
 Description: Source files for openjdk-17
 Homepage: https://openjdk.java.net
 
